@@ -14,11 +14,11 @@ namespace NieR
 		DWORD dword10628;
 		BYTE gap1062C[26292];
 		DWORD dword16CE0;
-		DWORD dword16CE4;
+		DWORD dwordShowPants;
 		BYTE gap16CE8[4];
 		DWORD dword16CEC;
 		BYTE gap16CF0[4];
-		DWORD dword16CF4;
+		DWORD isBuddy;
 		BYTE gap16CF8[908];
 		const unsigned int unsigned_int17084;
 		BYTE gap17088[48];
@@ -94,7 +94,7 @@ namespace NieR
 
 	typedef bool(__fastcall* _sub_7e6e60)(__int64, int, __int64);
 
-	typedef __int64(__fastcall* _sub_3084c0)(__int64);
+	typedef __int64(__fastcall* _GetPlayerFromPlayerNum)(__int64);
 
 	typedef __int64(__fastcall* _sub_7c4b50)();
 
@@ -137,7 +137,7 @@ namespace NieR
 	extern _sub_7459b0 sub_7459b0;
 	extern _sub_45a8c0 sub_45a8c0;
 	extern _sub_3876a0 sub_3876a0;
-	extern _sub_3084c0 sub_3084c0;
+	extern _GetPlayerFromPlayerNum GetPlayerFromPlayerNum;
 	extern _sub_7c4b50 sub_7c4b50;
 	extern _sub_7c4b90 sub_7c4b90;
 	extern _sub_7c9cb0 sub_7c9cb0;

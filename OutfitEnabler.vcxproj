@@ -24,6 +24,7 @@
     <ProjectGuid>{1455f5f8-4590-4b00-9450-24e0b6672726}</ProjectGuid>
     <RootNamespace>OutfitEnabler</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>NASA</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

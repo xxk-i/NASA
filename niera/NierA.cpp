@@ -35,7 +35,7 @@ namespace NieR
 	_sub_7459b0 sub_7459b0 = NULL;
 	_sub_45a8c0 sub_45a8c0 = NULL;
 	_sub_3876a0 sub_3876a0 = NULL;
-	_sub_3084c0 sub_3084c0 = NULL;
+	_GetPlayerFromPlayerNum GetPlayerFromPlayerNum = NULL;
 	_sub_7c4b50 sub_7c4b50 = NULL;
 	_sub_7c4b90 sub_7c4b90 = NULL;
 	_sub_7c9cb0 sub_7c9cb0 = NULL;
