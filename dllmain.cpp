@@ -520,7 +520,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 				set_mesh_visible(pPlayerModelInfo, "NS_2P_Eyemask");
 			}
 
-			if ((pPlayerModelInfo->dword170B8) == 1)
+			if ((pPlayerModelInfo->dwordisFacialNormal) == 1)
 			{
 				set_mesh_invisible(pPlayerModelInfo, "facial_normal");
 				set_mesh_invisible(pPlayerModelInfo, "Eyelash");
@@ -652,33 +652,25 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 				}
 			}
 
-			__int64 temp_144;
 			if ((pPlayerModelInfo->outfitEquipped) != 1)
 			{
 				if ((pPlayerModelInfo->dwordShowPants) == 0)
 				{
 					set_mesh_invisible(pPlayerModelInfo, "Cloth");
+					set_mesh_invisible(pPlayerModelInfo, "DLC_Cloth");
+					set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Cloth");
+					set_mesh_invisible(pPlayerModelInfo, "NS_2P_Cloth");
 				}
 			}
 
-			else if ((pPlayerModelInfo->dwordShowPants) == 0)
+			if ((pPlayerModelInfo->dwordisFacialNormal) == 1)
 			{
-				set_mesh_invisible(pPlayerModelInfo, "DLC_Cloth");
+				set_mesh_invisible(pPlayerModelInfo, "facial_normal");
 			}
 
-			__int64 temp_147 = (__int64)pPlayerModelInfo->pWMB;
-			const char* temp_12 = "";
-			if ((pPlayerModelInfo->dword170B8) == 1 && temp_147 != 0)
+			else
 			{
-				temp_12 = "facial_normal";
-			}
-			if ((pPlayerModelInfo->dword170B8) != 1 && temp_147 != 0)
-			{
-				temp_12 = "facial_serious";
-			}
-			if ((((pPlayerModelInfo->dword170B8) == 1 && temp_147 != 0) || ((pPlayerModelInfo->dword170B8) != 1 && temp_147 != 0)))
-			{
-				set_mesh_invisible(pPlayerModelInfo, temp_12);
+				set_mesh_invisible(pPlayerModelInfo, "facial_serious");
 			}
 		}
 	}
@@ -987,7 +979,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		}
 
 		const char* temp_21 = "";
-		if (pPlayerModelInfo->dword170B8 == 1)
+		if (pPlayerModelInfo->dwordisFacialNormal == 1)
 		{
 			set_mesh_invisible(pPlayerModelInfo, "facial_normal");
 			set_mesh_invisible(pPlayerModelInfo, "NS_9P_Normal");
@@ -1008,7 +1000,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			}
 		}
 
-		if ((pPlayerModelInfo->dword170B8 == 1 && pPlayerModelInfo->pWMB != 0) || (pPlayerModelInfo->dword170B8 != 1 && pPlayerModelInfo->pWMB != 0))
+		if ((pPlayerModelInfo->dwordisFacialNormal == 1 && pPlayerModelInfo->pWMB != 0) || (pPlayerModelInfo->dwordisFacialNormal != 1 && pPlayerModelInfo->pWMB != 0))
 		{
 			set_mesh_invisible(pPlayerModelInfo, temp_21);
 		}
@@ -1017,15 +1009,15 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		{
 			NieR::setDrawBasePlayerMeshes((void*)&pPlayerModelInfo->gap0[0x390], 1);
 			const char* temp_22 = "";
-			if (pPlayerModelInfo->dword170B8 == 1 && pPlayerModelInfo->pWMB != 0)
+			if (pPlayerModelInfo->dwordisFacialNormal == 1 && pPlayerModelInfo->pWMB != 0)
 			{
 				temp_22 = "facial_normal";
 			}
-			if (pPlayerModelInfo->dword170B8 != 1 && pPlayerModelInfo->pWMB != 0)
+			if (pPlayerModelInfo->dwordisFacialNormal != 1 && pPlayerModelInfo->pWMB != 0)
 			{
 				temp_22 = "facial_serious";
 			}
-			if ((pPlayerModelInfo->dword170B8 != 1 && pPlayerModelInfo->pWMB != 0) || (pPlayerModelInfo->dword170B8 != 1 && pPlayerModelInfo->pWMB != 0))
+			if ((pPlayerModelInfo->dwordisFacialNormal != 1 && pPlayerModelInfo->pWMB != 0) || (pPlayerModelInfo->dwordisFacialNormal != 1 && pPlayerModelInfo->pWMB != 0))
 			{
 				set_mesh_invisible(pPlayerModelInfo, temp_22);
 			}
