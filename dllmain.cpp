@@ -575,6 +575,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 	}
 
 
+	//A2
 	if (((pPlayerModelInfo->currentPlayer) != 0x10000 || ((pPlayerModelInfo->currentPlayer) == 0x10000 && (pPlayerModelInfo->dwordisDestructed) == 0)))
 	{
 		const char* extra = "";
@@ -659,22 +660,25 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 					set_mesh_invisible(pPlayerModelInfo, "Cloth");
 					set_mesh_invisible(pPlayerModelInfo, "DLC_Cloth");
 					set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Cloth");
-					set_mesh_invisible(pPlayerModelInfo, "NS_2P_Cloth");
+					set_mesh_invisible(pPlayerModelInfo, "NS_P2_Cloth");
 				}
 			}
 
 			if ((pPlayerModelInfo->dwordisFacialNormal) == 1)
 			{
 				set_mesh_invisible(pPlayerModelInfo, "facial_normal");
+				set_mesh_invisible(pPlayerModelInfo, "NS_P2_Normal");
 			}
 
 			else
 			{
 				set_mesh_invisible(pPlayerModelInfo, "facial_serious");
+				set_mesh_invisible(pPlayerModelInfo, "NS_P2_Serious");
 			}
 		}
 	}
 
+	//9S
 	int temp_106 = (pPlayerModelInfo->currentPlayer);
 	const char* extra = "";
 	if (temp_106 == 0x10200 || temp_106 == 0x10203)
