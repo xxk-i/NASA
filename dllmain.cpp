@@ -351,14 +351,13 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Skirt");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Chest");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Normal");
-			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Skirt");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Serious");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Broken");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Serious");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyemask");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Normal");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Feather");
-			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyelash_serious");
+			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyelash");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Body");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Broken");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Skirt");
@@ -388,14 +387,13 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Skirt");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Chest");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Normal");
-			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Skirt");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Serious");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Broken");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Serious");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyemask");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Normal");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Feather");
-			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyelash_serious");
+			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyelash");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Body");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Broken");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Skirt");
@@ -404,24 +402,43 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 
 		else if (pPlayerModelInfo->outfitEquipped == 4)	//2P
 		{
-			NieR::setDrawBasePlayerMeshes((void*)&pPlayerModelInfo->gap0[0x390], 0);
-			set_mesh_visible(pPlayerModelInfo, "Hair");
-			set_mesh_visible(pPlayerModelInfo, "NS_2P_Eyemask");
-			set_mesh_visible(pPlayerModelInfo, "NS_2P_Normal");
-			set_mesh_visible(pPlayerModelInfo, "NS_2P_Feather");
-			set_mesh_visible(pPlayerModelInfo, "NS_2P_Body");
-			set_mesh_visible(pPlayerModelInfo, "NS_2P_Skirt");
+			// We could do this nicely and do activations instead of deactivations but it doesn't play as nice with the other code
+			set_mesh_invisible(pPlayerModelInfo, "Armor_Body");
+			set_mesh_invisible(pPlayerModelInfo, "Armor_Head");
+			set_mesh_invisible(pPlayerModelInfo, "DLC_Body");
+			set_mesh_invisible(pPlayerModelInfo, "DLC_Skirt");
+			set_mesh_invisible(pPlayerModelInfo, "DLC_Broken");
+			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Body");
+			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Skirt");
+			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Chest");
+			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Normal");
+			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Serious");
+			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Broken");
+			set_mesh_invisible(pPlayerModelInfo, "Broken");
+			set_mesh_invisible(pPlayerModelInfo, "Body");
+			set_mesh_invisible(pPlayerModelInfo, "Feather");
+			set_mesh_invisible(pPlayerModelInfo, "Skirt");
 		}
 
 		else if (pPlayerModelInfo->outfitEquipped == 5) //Kimono
 		{
-			NieR::setDrawBasePlayerMeshes((void*)&pPlayerModelInfo->gap0[0x390], 0);
-			set_mesh_visible(pPlayerModelInfo, "Hair");
-			set_mesh_visible(pPlayerModelInfo, "NS_KIMONO_Body");
-			set_mesh_visible(pPlayerModelInfo, "NS_KIMONO_Skirt");
-			set_mesh_visible(pPlayerModelInfo, "NS_KIMONO_Chest");
-			set_mesh_visible(pPlayerModelInfo, "NS_KIMONO_Normal");
-			set_mesh_visible(pPlayerModelInfo, "NS_KIMONO_Skirt");
+			set_mesh_invisible(pPlayerModelInfo, "Armor_Body");
+			set_mesh_invisible(pPlayerModelInfo, "Armor_Head");
+			set_mesh_invisible(pPlayerModelInfo, "DLC_Body");
+			set_mesh_invisible(pPlayerModelInfo, "DLC_Skirt");
+			set_mesh_invisible(pPlayerModelInfo, "DLC_Broken");
+			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Serious");
+			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyemask");
+			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Normal");
+			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Feather");
+			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyelash");
+			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Body");
+			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Broken");
+			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Skirt");
+			set_mesh_invisible(pPlayerModelInfo, "Broken");
+			set_mesh_invisible(pPlayerModelInfo, "Body");
+			set_mesh_invisible(pPlayerModelInfo, "Feather");
+			set_mesh_invisible(pPlayerModelInfo, "Skirt");
 		}
 
 		else  // normal
@@ -430,119 +447,94 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			set_mesh_invisible(pPlayerModelInfo, "Armor_Head");
 			set_mesh_invisible(pPlayerModelInfo, "DLC_Body");
 			set_mesh_invisible(pPlayerModelInfo, "DLC_Skirt");
+			set_mesh_invisible(pPlayerModelInfo, "DLC_Broken");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Body");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Skirt");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Chest");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Normal");
-			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Skirt");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Serious");
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Broken");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Serious");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyemask");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Normal");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Feather");
-			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyelash_serious");
+			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyelash");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Body");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Broken");
 			set_mesh_invisible(pPlayerModelInfo, "NS_2P_Skirt");
-			v15 = "DLC_Broken";
 		}
 
-		set_mesh_invisible(pPlayerModelInfo, v15);
 
-		const char* leftover = "";
-		if (pPlayerModelInfo->dword178DC == 0)
+		if (pPlayerModelInfo->dwordisDestructed == 0)
 		{
-			if ((pPlayerModelInfo->outfitEquipped) != 1)
+			//There are usually outfit checks here but it really doesn't matter, we arent saving frames reducing these calls
+			if (pPlayerModelInfo->isBuddy == 0)
 			{
-				const char* extra = "";
-				if (pPlayerModelInfo->isBuddy == 0)
-				{
-					extra = "Broken";
-				}
-				if (pPlayerModelInfo->isBuddy != 0)
-				{
-					set_mesh_invisible(pPlayerModelInfo, "Feather");
-					if (pPlayerModelInfo->pWMB != 0)
-					{
-						extra = "Skirt";
-					}
-				}
-				if ((pPlayerModelInfo->isBuddy == 0) || ((pPlayerModelInfo->isBuddy != 0)))
-				{
-					set_mesh_invisible(pPlayerModelInfo, extra);
-				}
-
-				if (pPlayerModelInfo->dwordShowPants == 0)
-				{
-					set_mesh_invisible(pPlayerModelInfo, "Broken");
-					if (pPlayerModelInfo->pWMB != 0)
-					{
-						leftover = "Skirt";
-					}
-				}
+				set_mesh_invisible(pPlayerModelInfo, "Broken");
+				set_mesh_invisible(pPlayerModelInfo, "DLC_Broken");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Broken");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Broken");
 			}
-			else
+			if (pPlayerModelInfo->isBuddy != 0)
 			{
-				const char* extra = "";
-				if ((pPlayerModelInfo->isBuddy) == 0 && pPlayerModelInfo->pWMB != 0)
-				{
-					extra = "DLC_Broken";
-				}
-				if ((pPlayerModelInfo->isBuddy) != 0 && pPlayerModelInfo->pWMB != 0)
-				{
-					extra = "DLC_Skirt";
-				}
-				if (((pPlayerModelInfo->isBuddy) == 0 && pPlayerModelInfo->pWMB != 0) || ((pPlayerModelInfo->isBuddy) != 0 && (pPlayerModelInfo->pWMB != 0)))
-				{
-					set_mesh_invisible(pPlayerModelInfo, extra);
-				}
-
-				if (pPlayerModelInfo->dwordShowPants == 0)
-				{
-					set_mesh_invisible(pPlayerModelInfo, "DLC_Broken");
-					if (pPlayerModelInfo->pWMB)
-					{
-						leftover = "DLC_Skirt";
-					}
-				}
+				set_mesh_invisible(pPlayerModelInfo, "Feather");
+				set_mesh_invisible(pPlayerModelInfo, "Skirt");
+				set_mesh_invisible(pPlayerModelInfo, "DLC_Skirt");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Feather");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Skirt");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Skirt");
 			}
 
-			if ((((pPlayerModelInfo->outfitEquipped) != 1 && (pPlayerModelInfo->dwordShowPants) == 0) && pPlayerModelInfo->pWMB != 0) || (((pPlayerModelInfo->outfitEquipped) == 1 && (pPlayerModelInfo->dwordShowPants) == 0) && pPlayerModelInfo->pWMB != 0))
+			if (pPlayerModelInfo->dwordShowPants == 0)
 			{
-				set_mesh_invisible(pPlayerModelInfo, leftover);
+				set_mesh_invisible(pPlayerModelInfo, "Broken");
+				set_mesh_invisible(pPlayerModelInfo, "Skirt");
+				set_mesh_invisible(pPlayerModelInfo, "DLC_Broken");
+				set_mesh_invisible(pPlayerModelInfo, "DLC_Skirt");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Broken");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Skirt");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Broken");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Skirt");
 			}
 
-			const char* extra_6 = "";
 			if ((pPlayerModelInfo->dword16CEC) != 0)
 			{
 				if ((pPlayerModelInfo->accessoryEquipped) != 0xe && (pPlayerModelInfo->accessoryEquipped) != 0x3)
 				{
 					set_mesh_invisible(pPlayerModelInfo, "Eyelash");
+					set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyelash");
 				}
 
-				set_mesh_invisible(pPlayerModelInfo, "Eyelash_serious");
+				//This doesn't seem to exist (anymore)(?)
+				//set_mesh_invisible(pPlayerModelInfo, "Eyelash_serious");
 			}
 
 			if (((pPlayerModelInfo->dword16CEC) != 0 || ((pPlayerModelInfo->dword16CEC) != 0 && (pPlayerModelInfo->accessoryEquipped) == 0xe)))
 			{
 				set_mesh_visible(pPlayerModelInfo, "Eyemask");
+				set_mesh_visible(pPlayerModelInfo, "NS_2P_Eyemask");
 			}
 			if ((pPlayerModelInfo->accessoryEquipped) != 3)
 			{
 				set_mesh_visible(pPlayerModelInfo, "Eyemask");
+				set_mesh_visible(pPlayerModelInfo, "NS_2P_Eyemask");
 			}
 
-			const char* extra2 = "";
 			if ((pPlayerModelInfo->dword170B8) == 1)
 			{
 				set_mesh_invisible(pPlayerModelInfo, "facial_normal");
 				set_mesh_invisible(pPlayerModelInfo, "Eyelash");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Normal");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Normal");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyelash");
 			}
 			else
 			{
 				set_mesh_invisible(pPlayerModelInfo, "facial_serious");
 				set_mesh_invisible(pPlayerModelInfo, "Eyelash_serious");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_serious");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Serious");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyelash");
 			}
 		}
 		else
@@ -558,6 +550,20 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 				set_mesh_invisible(pPlayerModelInfo, "Feather");
 				set_mesh_invisible(pPlayerModelInfo, "Skirt");
 				set_mesh_invisible(pPlayerModelInfo, "Broken");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Body");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Skirt");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Chest");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Normal");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Serious");
+				set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Broken");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Serious");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyemask");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Normal");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Feather");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyelash");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Body");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Broken");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Skirt");
 			}
 			else
 			{
@@ -569,7 +575,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 	}
 
 
-	if (((pPlayerModelInfo->currentPlayer) != 0x10000 || ((pPlayerModelInfo->currentPlayer) == 0x10000 && (pPlayerModelInfo->dword178DC) == 0)))
+	if (((pPlayerModelInfo->currentPlayer) != 0x10000 || ((pPlayerModelInfo->currentPlayer) == 0x10000 && (pPlayerModelInfo->dwordisDestructed) == 0)))
 	{
 		const char* extra = "";
 		if ((pPlayerModelInfo->currentPlayer) - 0x10100 <= 1)
@@ -922,20 +928,20 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Pants");
 		}
 
-		char buffer[256];
+		char* buffer = new char[256];
 		__int64 var_18_1 = 0;
 		sprintf_s(buffer, 0x10, "PL/9S_NoPatch");
 
 		//count size of string inside buffer
 		
-		int count = -1;
+		__int64 count = -1;
 		while (buffer[count])
 		{
 			++count;
 		}
 
 		//mostly 1:1 to binaryninja
-		__int64 temp_220 = NieR::sub_150d80((void*)(modBase + 0xF8C220), (void*)NieR::sub_28ed30(&buffer, count), &buffer, count);
+		__int64 temp_220 = NieR::sub_150d80((void*)(modBase + 0xF8C220), (void*)NieR::sub_28ed30(buffer, count), buffer, count);
 		__int64 temp_38 = temp_220;
 		int temp_19;
 
@@ -1129,70 +1135,24 @@ int Main(PVOID lpParameter)
     {
         return 1;
     }
-	
-    if (MH_CreateHook(NieR::ManageMeshVisibilities, &HkManageMeshVisibilites, reinterpret_cast<LPVOID*>(&NieR::fpManageMeshVisiblities)) != MH_OK)
-    {
-        return 1;
-    }
 
-	if (MH_CreateHook(NieR::ValidateDLCArmor, &hkValidateDLCArmor, reinterpret_cast<LPVOID*>(&NieR::fpValidateDLCArmor)) != MH_OK)
-	{
-		return 1;
-	}
+	//if (MH_CreateHook(NieR::UpdateEquippedActive, &hkUpdateEquippedActive, reinterpret_cast<LPVOID*>(&NieR::fpUpdateEquippedActive)) != MH_OK) return 1;
+	//if (MH_EnableHook(NieR::UpdateEquippedActive) != MH_OK) return 1;
 
-	if (MH_CreateHook(NieR::ValidateNonCharacterSpecificEquippable, &hkValidateNonSpecificCharacterEquippable, reinterpret_cast<LPVOID*>(&NieR::fpValidateNonSpecificCharacterEquippable)) != MH_OK)
-	{
-		return 1;
-	}
+    if (MH_CreateHook(NieR::ManageMeshVisibilities, &HkManageMeshVisibilites, reinterpret_cast<LPVOID*>(&NieR::fpManageMeshVisiblities)) != MH_OK) return 1;
+	if (MH_EnableHook(NieR::ManageMeshVisibilities) != MH_OK) return 1;
 
-	if (MH_CreateHook(NieR::SetEquippedFromPause, &hkSetEquippedFromPause, reinterpret_cast<LPVOID*>(&NieR::fpSetEquippedFromPause)) != MH_OK)
-	{
-		return 1;
-	}
+	if (MH_CreateHook(NieR::ValidateDLCArmor, &hkValidateDLCArmor, reinterpret_cast<LPVOID*>(&NieR::fpValidateDLCArmor)) != MH_OK) return 1;
+	if (MH_EnableHook(NieR::ValidateDLCArmor) != MH_OK) return 1;
 
-	/*
-	if (MH_CreateHook(NieR::UpdateEquippedActive, &hkUpdateEquippedActive, reinterpret_cast<LPVOID*>(&NieR::fpUpdateEquippedActive)) != MH_OK)
-	{
-		return 1;
-	}
-	*/
-	
-	if (MH_CreateHook(NieR::GetOutfitIDFromItemID, &hkGetOutfitIDFromItemID, reinterpret_cast<LPVOID*>(&NieR::fpGetOutfitIDFromItemID)) != MH_OK)
-	{
-		return 1;
-	}
-	
-    if (MH_EnableHook(NieR::ManageMeshVisibilities) != MH_OK)
-    {
-        return 1;
-    }
-	
-	if (MH_EnableHook(NieR::ValidateDLCArmor) != MH_OK)
-	{
-		return 1;
-	}
+	if (MH_CreateHook(NieR::ValidateNonCharacterSpecificEquippable, &hkValidateNonSpecificCharacterEquippable, reinterpret_cast<LPVOID*>(&NieR::fpValidateNonSpecificCharacterEquippable)) != MH_OK) return 1;
+	if (MH_EnableHook(NieR::ValidateNonCharacterSpecificEquippable) != MH_OK) return 1;
 
-	if (MH_EnableHook(NieR::ValidateNonCharacterSpecificEquippable) != MH_OK)
-	{
-		return 1;
-	}
+	if (MH_CreateHook(NieR::GetOutfitIDFromItemID, &hkGetOutfitIDFromItemID, reinterpret_cast<LPVOID*>(&NieR::fpGetOutfitIDFromItemID)) != MH_OK) return 1;
+	if (MH_EnableHook(NieR::GetOutfitIDFromItemID) != MH_OK) return 1;
 
-	if (MH_EnableHook(NieR::SetEquippedFromPause) != MH_OK)
-	{
-		return 1;
-	}
-
-	/*
-	if (MH_EnableHook(NieR::UpdateEquippedActive) != MH_OK)
-	{
-		return 1;
-	}
-	*/
-
-	if (MH_EnableHook(NieR::GetOutfitIDFromItemID) != MH_OK)
-	{
-		return 1;
-	}
+	if (MH_CreateHook(NieR::SetEquippedFromPause, &hkSetEquippedFromPause, reinterpret_cast<LPVOID*>(&NieR::fpSetEquippedFromPause)) != MH_OK) return 1;
+	if (MH_EnableHook(NieR::SetEquippedFromPause) != MH_OK) return 1;
 
     return 0;
 }

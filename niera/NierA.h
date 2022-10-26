@@ -29,7 +29,7 @@ namespace NieR
 		BYTE gap170C8[1808];
 		DWORD dword177D8;
 		BYTE gap177DC[256];
-		DWORD dword178DC;
+		DWORD dwordisDestructed;
 		DWORD dword178E0;
 	};
 
