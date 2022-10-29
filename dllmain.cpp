@@ -511,13 +511,14 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 
 			if (((pPlayerModelInfo->dword16CEC) != 0 || ((pPlayerModelInfo->dword16CEC) != 0 && (pPlayerModelInfo->accessoryEquipped) == 0xe)))
 			{
-				set_mesh_visible(pPlayerModelInfo, "Eyemask");
-				set_mesh_visible(pPlayerModelInfo, "NS_2P_Eyemask");
+				if (pPlayerModelInfo->outfitEquipped == 0) set_mesh_visible(pPlayerModelInfo, "Eyemask");
+				else if (pPlayerModelInfo->outfitEquipped == 4) set_mesh_visible(pPlayerModelInfo, "NS_2P_Eyemask");
 			}
+
 			if ((pPlayerModelInfo->accessoryEquipped) != 3)
 			{
-				set_mesh_visible(pPlayerModelInfo, "Eyemask");
-				set_mesh_visible(pPlayerModelInfo, "NS_2P_Eyemask");
+				if (pPlayerModelInfo->outfitEquipped == 0) set_mesh_visible(pPlayerModelInfo, "Eyemask");
+				else if (pPlayerModelInfo->outfitEquipped == 4) set_mesh_visible(pPlayerModelInfo, "NS_2P_Eyemask");
 			}
 
 			if ((pPlayerModelInfo->dwordisFacialNormal) == 1)
@@ -847,8 +848,8 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 				//idk this is in the decomp but set_mesh_invisible doesnt do anything if pWMB is 0 so
 				//if (pPlayerModelInfo->pWMB == 0)
 				//{
-					set_mesh_invisible(pPlayerModelInfo, "DLC_mesh_es0206");
-					set_mesh_invisible(pPlayerModelInfo, "DLC_mesh_pl0200");
+				//	set_mesh_invisible(pPlayerModelInfo, "DLC_mesh_es0206");
+				//	set_mesh_invisible(pPlayerModelInfo, "DLC_mesh_pl0200");
 				//}
 			}
 			else
@@ -1012,18 +1013,13 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		if (((pPlayerModelInfo->currentPlayer - 0x10500) & 0xfffffeff) == 0)
 		{
 			NieR::setDrawBasePlayerMeshes((void*)&pPlayerModelInfo->gap0[0x390], 1);
-			const char* temp_22 = "";
 			if (pPlayerModelInfo->dwordisFacialNormal == 1 && pPlayerModelInfo->pWMB != 0)
 			{
-				temp_22 = "facial_normal";
+				set_mesh_invisible(pPlayerModelInfo, "facial_normal");
 			}
 			if (pPlayerModelInfo->dwordisFacialNormal != 1 && pPlayerModelInfo->pWMB != 0)
 			{
-				temp_22 = "facial_serious";
-			}
-			if ((pPlayerModelInfo->dwordisFacialNormal != 1 && pPlayerModelInfo->pWMB != 0) || (pPlayerModelInfo->dwordisFacialNormal != 1 && pPlayerModelInfo->pWMB != 0))
-			{
-				set_mesh_invisible(pPlayerModelInfo, temp_22);
+				set_mesh_invisible(pPlayerModelInfo, "facial_serious");
 			}
 			
 			set_mesh_invisible(pPlayerModelInfo, "Clothing_Sit");

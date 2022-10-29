@@ -22,7 +22,7 @@ namespace NieR
 		BYTE gap16CF8[908];
 		const unsigned int unsigned_int17084;
 		BYTE gap17088[48];
-		DWORD dword170B8;
+		DWORD dwordisFacialNormal;
 		DWORD accessoryEquipped;
 		unsigned int unsigned_int170C0;
 		DWORD outfitEquipped;
