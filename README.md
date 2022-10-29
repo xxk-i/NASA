@@ -28,6 +28,7 @@ The accessories are currently highest priority, although I don't know when I wil
 Thank you to all who have ever joined NieR:Modding discord server and especially the following who have painfully stuck through my cascade of 9881 messages in this month alone and made the entire experience worth it
 - Baal Silverwing
 - DevolasRevenge
+- EM4V
 - inculta
 - Izalith
 - oli
