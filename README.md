@@ -8,7 +8,7 @@ Modifies NieR:Automata (Steam) to add support for the NX DLC
 - Alternatively, inject the DLL into NieR:Automata on startup using your preferred method
 
 # IMPORTANT
-The accessories are currently highest priority, although I don't know when I will do them. Feel free to open issues on this repo but I probably won't be able to get to them. The code in this repo is really just IDA pseudocode copy and paste, nothing too complicated - other devs should be able to pick it up basically immediately.
+The head accessories (masks) are currently highest priority, although I don't know when I will do them. Feel free to open issues on this repo but I probably won't be able to get to them. The code in this repo is really just IDA pseudocode copy and paste, nothing too complicated - other devs should be able to pick it up basically immediately.
 
 # Known/Probable issues
 - Certain 9S sequences probably don't look as they should with switch outfits equipped
