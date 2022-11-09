@@ -1178,7 +1178,9 @@ void ConsoleSetup()
 int Main(PVOID lpParameter)
 {
 	//Thanks wolf!
+#ifdef DEBUG
 	ConsoleSetup();
+#endif // DEBUG
 
     modBase = (uintptr_t)GetModuleHandle(NULL);
 	InitializeFunctionPointers();
