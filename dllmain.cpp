@@ -1069,6 +1069,66 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 	return result;
 }
 
+//Woeful_Wolf's Limit Break
+//https://docs.google.com/spreadsheets/d/1rGSfrN9eiRGONrDsQKA0A6bI5_EVO-NmpLg8WuwNEyg/edit#gid=715728971
+void LimitBreak()
+{
+	//Lazy instruction byteswap, this should be replaced with hooks (it its own plugin even)
+	//This is protected executable memory, so we have to VirtualProtect everything
+
+	DWORD oldProtect = NULL; //One var, reduce my typing :)
+
+	//FILE ROOT
+	VirtualProtect((LPVOID)(modBase + 0x86A9E5), sizeof(__int64), PAGE_EXECUTE_READWRITE, &oldProtect);
+	*(__int64*)(modBase + 0x86A9E5) = 0x29E20000;
+	VirtualProtect((LPVOID)(modBase + 0x86A9E5), sizeof(__int64), oldProtect, &oldProtect);
+
+	//TEXTURE ROOT
+	VirtualProtect((LPVOID)(modBase + 0x86AA0B), sizeof(__int64), PAGE_EXECUTE_READWRITE, &oldProtect);
+	*(__int64*)(modBase + 0x86AA0B) = 0xF74C0000;
+	VirtualProtect((LPVOID)(modBase + 0x86AA0B), sizeof(__int64), oldProtect, &oldProtect);
+
+	//PL FILE	
+	VirtualProtect((LPVOID)(modBase + 0x86AC05), sizeof(__int64), PAGE_EXECUTE_READWRITE, &oldProtect);
+	*(__int64*)(modBase + 0x86AC05) = 0x6E40000;
+	VirtualProtect((LPVOID)(modBase + 0x86AC05), sizeof(__int64), oldProtect, &oldProtect);
+
+	//EM+BG FILE
+	VirtualProtect((LPVOID)(modBase + 0x86AC53), sizeof(__int64), PAGE_EXECUTE_READWRITE, &oldProtect);
+	*(__int64*)(modBase + 0x86AC53) = 0x8400000;
+	VirtualProtect((LPVOID)(modBase + 0x86AC53), sizeof(__int64), oldProtect, &oldProtect);
+
+	//UI FILE
+	VirtualProtect((LPVOID)(modBase + 0x86AD16), sizeof(__int64), PAGE_EXECUTE_READWRITE, &oldProtect);
+	*(__int64*)(modBase + 0x86AD16) = 0xF00000;
+	VirtualProtect((LPVOID)(modBase + 0x86AD16), sizeof(__int64), oldProtect, &oldProtect);
+
+	//UIFont FILE
+	VirtualProtect((LPVOID)(modBase + 0x86AD3D), sizeof(__int64), PAGE_EXECUTE_READWRITE, &oldProtect);
+	*(__int64*)(modBase + 0x86AD3D) = 0xA00000;
+	VirtualProtect((LPVOID)(modBase + 0x86AD3D), sizeof(__int64), oldProtect, &oldProtect);
+
+	//PL VRAM
+	VirtualProtect((LPVOID)(modBase + 0x86AE9C), sizeof(__int64), PAGE_EXECUTE_READWRITE, &oldProtect);
+	*(__int64*)(modBase + 0x86AE9C) = 0x2A800000;
+	VirtualProtect((LPVOID)(modBase + 0x86AE9C), sizeof(__int64), oldProtect, &oldProtect);
+
+	//EM+BG VRAM
+	VirtualProtect((LPVOID)(modBase + 0x86AEEA), sizeof(__int64), PAGE_EXECUTE_READWRITE, &oldProtect);
+	*(__int64*)(modBase + 0x86AEEA) = 0x47880000;
+	VirtualProtect((LPVOID)(modBase + 0x86AEEA), sizeof(__int64), oldProtect, &oldProtect);
+
+	//UI VRAM
+	VirtualProtect((LPVOID)(modBase + 0x86AFD4), sizeof(__int64), PAGE_EXECUTE_READWRITE, &oldProtect);
+	*(__int64*)(modBase + 0x86AFD4) = 0xF000000;
+	VirtualProtect((LPVOID)(modBase + 0x86AFD4), sizeof(__int64), oldProtect, &oldProtect);
+
+	//UIFont VRAM
+	VirtualProtect((LPVOID)(modBase + 0x86AFFB), sizeof(__int64), PAGE_EXECUTE_READWRITE, &oldProtect);
+	*(__int64*)(modBase + 0x86AFFB) = 0x15000000;
+	VirtualProtect((LPVOID)(modBase + 0x86AFFB), sizeof(__int64), oldProtect, &oldProtect);
+}
+
 void InitializeFunctionPointers()
 {
     NieR::ManageMeshVisibilities = (NieR::_ManageMeshVisibilities)(modBase + 0x51B940);
@@ -1109,7 +1169,7 @@ void InitializeFunctionPointers()
 
 void ConsoleSetup() 
 {
-	AllocConsole();
+	//AllocConsole();
 	freopen_s(&stream, "log.txt", "w", stdout);
 	freopen_s(&stream, "log.txt", "w", stderr);
 	freopen_s(&stream, "log.txt", "w", stdin);
@@ -1122,6 +1182,7 @@ int Main(PVOID lpParameter)
 
     modBase = (uintptr_t)GetModuleHandle(NULL);
 	InitializeFunctionPointers();
+	//LimitBreak();
 
     if (MH_Initialize() != MH_OK)
     {
