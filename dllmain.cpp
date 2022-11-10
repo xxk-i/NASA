@@ -87,7 +87,7 @@ bool hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 		//If this returns true, the outfit shows as ACTIVE
 		if (NieR::GetPlayerFromPlayerNum(currentPlayer))
 		{
-			std::cout << "Outfit_ID: " << NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) << " OutFitEquipped: " << ((NieR::PlayerModelInfo*)NieR::GetPlayerFromPlayerNum(currentPlayer))->outfitEquipped << std::endl;
+			//std::cout << "Outfit_ID: " << NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) << " OutFitEquipped: " << ((NieR::PlayerModelInfo*)NieR::GetPlayerFromPlayerNum(currentPlayer))->outfitEquipped << std::endl;
 			return NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) == ((NieR::PlayerModelInfo*)NieR::GetPlayerFromPlayerNum(currentPlayer))->outfitEquipped;
 		}
 		//return NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) == *(int*)((modBase + 0x1494354) + (sizeof(int) * currentPlayer));
@@ -160,48 +160,57 @@ bool hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer)
 
 //If this returns 1, the "Use" button will instead show "Equip"
 //NOTE: The outfit will still have to pass the "ValidateOutfit" to be clickable in the menu!
-bool hkValidateNonSpecificCharacterEquippable(__int64 item_base, __int64 item_id)
+__int64 hkValidateNonSpecificCharacterEquippable(__int64 item_base, int item_id)
 {
+	__int64 id = item_id;
 	if (item_id != -1)
 	{
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_changeArmour1"))
+		const char* v = NieR::ResolveNameFromItemID(item_base, id);
+		if (!strcmp(v, "item_uq_changeArmour1"))
+			return true;
+
+		const char* v2 = NieR::ResolveNameFromItemID(item_base, id);
+		if (!strcmp(v2, "item_uq_changeArmour2"))
+			return true;
+
+		const char* v3 = NieR::ResolveNameFromItemID(item_base, id);
+		if (!strcmp(v3, "item_uq_dlcCloth1"))
+			return true;
+
+		const char* v4 = NieR::ResolveNameFromItemID(item_base, id);
+		if (!strcmp(v4, "item_uq_dlcCloth2"))
+			return true;
+
+		const char* v5 = NieR::ResolveNameFromItemID(item_base, id);
+		if (!strcmp(v5, "item_uq_dlcCloth3"))
+			return true;
+
+		const char* v6 = NieR::ResolveNameFromItemID(item_base, item_id);
+		if (!strcmp(v6, "item_uq_dlcOutfit1"))
 			return 1;
 
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_changeArmour2"))
+		const char* v7 = NieR::ResolveNameFromItemID(item_base, item_id);
+		if (!strcmp(v7, "item_uq_dlcOutfit2"))
 			return 1;
 
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_changeArmour2"))
+		const char* v8 = NieR::ResolveNameFromItemID(item_base, item_id);
+		if (!strcmp(v8, "item_uq_dlcOutfit3"))
 			return 1;
 
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_dlcCloth1"))
+		const char* v9 = NieR::ResolveNameFromItemID(item_base, item_id);
+		if (!strcmp(v9, "item_uq_dlcOutfit4"))
 			return 1;
 
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_dlcCloth2"))
+		const char* v10 = NieR::ResolveNameFromItemID(item_base, item_id);
+		if (!strcmp(v10, "item_uq_dlcOutfit5"))
 			return 1;
 
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_dlcCloth3"))
-			return 1;
-
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_dlcOutfit1"))
-			return 1;
-
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_dlcOutfit2"))
-			return 1;
-
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_dlcOutfit3"))
-			return 1;
-
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_dlcOutfit4"))
-			return 1;
-
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_dlcOutfit5"))
-			return 1;
-
-		if (!strcmp(NieR::ResolveNameFromItemID(item_base, item_id), "item_uq_dlcOutfit6"))
+		const char* v11 = NieR::ResolveNameFromItemID(item_base, item_id);
+		if (!strcmp(v11, "item_uq_dlcOutfit6"))
 			return 1;
 	}
 
-	return 0;
+	return false;
 }
 
 void set_mesh_invisible(NieR::PlayerModelInfo* pPlayerModelInfo, const char* mesh_name)
@@ -327,10 +336,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		}
 	}
 
-	else
-	{
-		return NieR::fpSetEquippedFromPause(a1, item_id);
-	}
+	return NieR::fpSetEquippedFromPause(a1, item_id);
 }
 
 //Hook
@@ -662,6 +668,11 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 					set_mesh_invisible(pPlayerModelInfo, "DLC_Cloth");
 					set_mesh_invisible(pPlayerModelInfo, "NS_KIMONO_Cloth");
 					set_mesh_invisible(pPlayerModelInfo, "NS_P2_Cloth");
+				}
+
+				if (pPlayerModelInfo->outfitEquipped == 2)
+				{
+					set_mesh_visible(pPlayerModelInfo, "NS_KIMONO_Broken");
 				}
 			}
 
@@ -1028,7 +1039,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 	
 	//the return code is weird just using this as default maybe itll end the world idk
 	__int64 result = 0x10000;
-	if (((*(DWORD*)(modBase + 0x10297F0)) & 0x20) == 0 || ((*(DWORD*)(modBase + 0x10297F0)) & 20) != 0 && (pPlayerModelInfo->dword10628 == 0))
+	if (((*(int8_t*)(modBase + 0x10297F0)) & 0x20) == 0 || ((*(int8_t*)(modBase + 0x10297F0)) & 20) != 0 && (pPlayerModelInfo->dword10628 == 0))
 	{
 		if (pPlayerModelInfo->unsigned_int17084 != 0)
 		{
@@ -1071,6 +1082,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 
 //Woeful_Wolf's Limit Break
 //https://docs.google.com/spreadsheets/d/1rGSfrN9eiRGONrDsQKA0A6bI5_EVO-NmpLg8WuwNEyg/edit#gid=715728971
+/*
 void LimitBreak()
 {
 	//Lazy instruction byteswap, this should be replaced with hooks (it its own plugin even)
@@ -1128,6 +1140,7 @@ void LimitBreak()
 	*(__int64*)(modBase + 0x86AFFB) = 0x15000000;
 	VirtualProtect((LPVOID)(modBase + 0x86AFFB), sizeof(__int64), oldProtect, &oldProtect);
 }
+*/
 
 void InitializeFunctionPointers()
 {
