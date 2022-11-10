@@ -102,7 +102,7 @@ bool hkValidateAccessory(__int64 item_base, __int64 item_id, int currentPlayer)
 	return true;
 }
 
-bool hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer)
+__int64 hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer)
 {
 	const char* resolved_name = "";
 	const char* expected_name = "";
@@ -126,7 +126,8 @@ bool hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer)
 		if (!strcmp(resolved_name, "item_uq_dlcOutfit2"))
 			return 1i64;
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
-		expected_name = "item_uq_dlcCloth1";
+		if (!strcmp(resolved_name, "item_uq_dlCloth1"))
+			return 1i64;
 	}
 
 	//9S
@@ -139,7 +140,8 @@ bool hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer)
 		if (!strcmp(resolved_name, "item_uq_dlcOutfit4"))	//Kimono
 			return 1i64;
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
-		expected_name = "item_uq_dlcCloth2";
+		if (!strcmp(resolved_name, "item_uq_dlCloth2"))
+			return 1i64;
 	}
 
 	//A2
@@ -152,10 +154,11 @@ bool hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer)
 		if (!strcmp(resolved_name, "item_uq_dlcOutfit6"))	//Kimono
 			return 1i64;
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
-		expected_name = "item_uq_dlcCloth3";
+		if (!strcmp(resolved_name, "item_uq_dlCloth3"))
+			return 1i64;
 	}
 
-	return !strcmp(resolved_name, expected_name);
+	return 0;
 }
 
 //If this returns 1, the "Use" button will instead show "Equip"
