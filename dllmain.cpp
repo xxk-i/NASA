@@ -32,7 +32,7 @@ a strcmp doesnt match (strcmp returns 0) and returns if the outfit is active
 
 This is my refactored version
 */
-bool hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
+__int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 {
 	//std::cout << "ItemID: " << item_id << " ResolvedName: " << NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id) << std::endl;
 
@@ -53,7 +53,7 @@ bool hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 			strcmp(resolvedName, "item_uq_dlcOutfit1") &&
 			strcmp(resolvedName, "item_uq_dlcOutfit2"))
 		{
-			return false;
+			return 0;
 		}
 	}
 
@@ -65,7 +65,7 @@ bool hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 			strcmp(resolvedName, "item_uq_dlcOutfit3") &&
 			strcmp(resolvedName, "item_uq_dlcOutfit4"))
 		{
-			return false;
+			return 0;
 		}
 	}
 
@@ -77,7 +77,7 @@ bool hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 			strcmp(resolvedName, "item_uq_dlcOutfit5") &&
 			strcmp(resolvedName, "item_uq_dlcOutfit6"))
 		{
-			return false;
+			return 0;
 		}
 	}
 
@@ -93,7 +93,7 @@ bool hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 		//return NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) == *(int*)((modBase + 0x1494354) + (sizeof(int) * currentPlayer));
 	}
 
-	return false;
+	return 0;
 }
 
 //TODO: DO THIS FOR ACCESSORIES
@@ -126,7 +126,7 @@ __int64 hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer
 		if (!strcmp(resolved_name, "item_uq_dlcOutfit2"))
 			return 1i64;
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
-		if (!strcmp(resolved_name, "item_uq_dlCloth1"))
+		if (!strcmp(resolved_name, "item_uq_dlcCloth1"))
 			return 1i64;
 	}
 
@@ -140,7 +140,7 @@ __int64 hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer
 		if (!strcmp(resolved_name, "item_uq_dlcOutfit4"))	//Kimono
 			return 1i64;
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
-		if (!strcmp(resolved_name, "item_uq_dlCloth2"))
+		if (!strcmp(resolved_name, "item_uq_dlcCloth2"))
 			return 1i64;
 	}
 
@@ -154,7 +154,7 @@ __int64 hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer
 		if (!strcmp(resolved_name, "item_uq_dlcOutfit6"))	//Kimono
 			return 1i64;
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
-		if (!strcmp(resolved_name, "item_uq_dlCloth3"))
+		if (!strcmp(resolved_name, "item_uq_dlcCloth3"))
 			return 1i64;
 	}
 
