@@ -6,6 +6,7 @@ This repo adds functionality support to NX items, but does not add the items the
 
 # Installation
 - Install as a nier-mod-loader plugin: https://github.com/xxk-i/nier-mod-loader/releases
+    - (e.g.) data\mods\plugins\NASA.dll
 
 # IMPORTANT
 The head accessories (masks) are currently highest priority, although I don't know when I will do them. Feel free to open issues on this repo but I probably won't be able to get to them. The code in this repo is really just IDA pseudocode copy and paste, nothing too complicated - other devs should be able to pick it up basically immediately.
