@@ -18,6 +18,7 @@ namespace NieR
 	_ValidateNonCharacterSpecificEquippable ValidateNonCharacterSpecificEquippable = NULL;
 	_SetOutfitFromPause SetOutfitFromPause = NULL;
 	_SetEquippedFromPause SetEquippedFromPause = NULL;
+	_lambda Lambda = NULL;
 
 	//Unknown-function pointers
 	_sub_52e9e0 sub_52e9e0 = NULL;
@@ -48,11 +49,4 @@ namespace NieR
 	_UpdateEquippedActive fpUpdateEquippedActive = NULL;
 	_ValidateDLCArmor fpValidateDLCArmor = NULL;
 	_ValidateNonCharacterSpecificEquippable fpValidateNonSpecificCharacterEquippable = NULL;
-
-	//Used a lot in the executable
-	__int64* lambda_meme(__int64* a1, __int64* a2)
-	{
-		*(__int64*)a1 = *a2;
-		return a1;
-	}
 }

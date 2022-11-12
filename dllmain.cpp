@@ -7,6 +7,13 @@
 uintptr_t modBase = NULL;
 FILE* stream;
 
+//Used a lot in the executable
+__int64* lambda_meme(__int64* a1, int* a2)
+{
+	*(__int64*)a1 = *a2;
+	return a1;
+}
+
 //TODO maybe look at this? try to avoid resolving name?
 __int64 hkGetOutfitIDFromItemID(__int64 item_base, int item_ID)
 {
@@ -85,12 +92,14 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 	{
 		//Same reminder, we are hooking GetOutfitIDFromItemID
 		//If this returns true, the outfit shows as ACTIVE
+		/*
 		if (NieR::GetPlayerFromPlayerNum(currentPlayer))
 		{
 			//std::cout << "Outfit_ID: " << NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) << " OutFitEquipped: " << ((NieR::PlayerModelInfo*)NieR::GetPlayerFromPlayerNum(currentPlayer))->outfitEquipped << std::endl;
 			return NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) == ((NieR::PlayerModelInfo*)NieR::GetPlayerFromPlayerNum(currentPlayer))->outfitEquipped;
 		}
-		//return NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) == *(int*)((modBase + 0x1494354) + (sizeof(int) * currentPlayer));
+		*/
+		return NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) == *(int*)((modBase + 0x1494354) + (sizeof(int) * currentPlayer));
 	}
 
 	return 0;
@@ -258,7 +267,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//2P's Body Replica (White)
 	if (item_id == 81)
 	{
-		DWORD playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 		if (v7)
@@ -272,7 +281,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//Yorha Uniform 1 (Kimono)
 	if (item_id == 82)
 	{
-		DWORD playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 		if (v7)
@@ -286,7 +295,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//9P (White 9S)
 	if (item_id == 83)
 	{
-		DWORD playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 		if (v7)
@@ -300,7 +309,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//9S Kimono
 	if (item_id == 84)
 	{
-		DWORD playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 		if (v7)
@@ -314,7 +323,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//P2's Body Replica
 	if (item_id == 85)
 	{
-		DWORD playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 		if (v7)
@@ -328,7 +337,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//YoRHA Uniform Prototype (NS_A2)
 	if (item_id == 86)
 	{
-		DWORD playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 		if (v7)
@@ -647,21 +656,28 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 				set_mesh_invisible(pPlayerModelInfo, "NS_P2_Serious");
 			}
 
-			if (pPlayerModelInfo->unsigned_int17084 != 0)
+			if ((NieR::sub_745c50((int*)(&pPlayerModelInfo->unsigned_int17084)) != 0 && ((pPlayerModelInfo->accessoryEquipped) != 0xf)))
 			{
-				if ((NieR::sub_745c50((DWORD*)(pPlayerModelInfo->unsigned_int17084)) != 0 && ((pPlayerModelInfo->accessoryEquipped) != 0xf)))
-				{
-					set_mesh_invisible(pPlayerModelInfo, "Hair");
-				}
-				DWORD tmp = *(DWORD*)pPlayerModelInfo->unsigned_int17084;
-				DWORD tmp2 = *(DWORD*)tmp;
-
-				DWORD* temp_101 = (DWORD*)NieR::sub_45a850(NieR::sub_745c50((DWORD*)tmp2));
-				if (temp_101 != 0)
-				{
-					*(DWORD*)(DWORD)(temp_101 + 0x843) = (pPlayerModelInfo->accessoryEquipped) != 0xF;
-				}
+				set_mesh_invisible(pPlayerModelInfo, "Hair");
 			}
+
+			//Mask
+			if ((NieR::sub_745c50((int*)(&pPlayerModelInfo->unsigned_int17084)) != 0 && ((pPlayerModelInfo->accessoryEquipped) != 0x10))) //temporary value
+			{
+				set_mesh_invisible(pPlayerModelInfo, "Hair_Mask");
+			}
+
+			int var_30 = 0;
+			int var_38 = 0;
+
+			__int64* rax_101;
+			rax_101 = (__int64*)NieR::sub_45a850(NieR::sub_745c50(NieR::Lambda(&var_38, NieR::Lambda(&var_30, (int*)((char*)pPlayerModelInfo + 0x17084)))));
+
+			if (rax_101 != 0)
+			{
+				*(int*)((char*)rax_101 + 0x834) = *(int*)((char*)pPlayerModelInfo + 0x170bc) != 0xf;
+			}
+
 
 			if ((pPlayerModelInfo->outfitEquipped) != 1)
 			{
@@ -1046,33 +1062,37 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 	{
 		if (pPlayerModelInfo->unsigned_int17084 != 0)
 		{
-			DWORD tmp = *(DWORD*)pPlayerModelInfo->unsigned_int17084;
-			DWORD tmp2 = *(DWORD*)tmp;
-			DWORD* temp_247 = (DWORD*)NieR::sub_45a850(NieR::sub_745c50((DWORD*)tmp2));
+			__int64* tmp1 = 0;
+			__int64* tmp2 = 0;
+			__int64* temp_247 = (__int64*)NieR::sub_45a850(
+				NieR::sub_745c50(
+					(int*)lambda_meme((__int64*) & tmp2, (int*)lambda_meme((__int64*) & tmp1, (int*)((__int64)pPlayerModelInfo + 0x17084)))));
 			if (temp_247 != 0)
 			{
-				NieR::setDrawBasePlayerMeshes(temp_247 + 912, 1);
+				NieR::setDrawBasePlayerMeshes(&temp_247[0x72], 1);
 			}
 			
-			tmp = *(DWORD*)pPlayerModelInfo->unsigned_int170C0;
-			tmp2 = *(DWORD*)tmp;
-			DWORD* tmp_251 = (DWORD*)NieR::sub_45a850(NieR::sub_745c50((DWORD*)tmp2));
-			if (tmp_251 != 0)
+			tmp1 = 0;
+			tmp2 = 0;
+			__int64* temp_251 = (__int64*)NieR::sub_45a850(
+				NieR::sub_745c50(
+					(int*)lambda_meme((__int64*) & tmp2, (int*)lambda_meme((__int64*) & tmp1, (int*)((__int64)pPlayerModelInfo + 0x170c0)))));
+			if (temp_251 != 0)
 			{
-				*(tmp_251 + 0x834) = 1;
+				*(int*)(temp_251 + 0x834) = 1;
 			}
 		}
 	}
 
-	if (((*(__int8*)(modBase + 0x10297F0)) & 0x20) != 0 && (pPlayerModelInfo->dword10628 != 0))
+	if (((*(int8_t*)(modBase + 0x10297F0)) & 0x20) != 0 && (pPlayerModelInfo->dword10628 != 0))
 	{
 		NieR::setDrawBasePlayerMeshes((void*)&pPlayerModelInfo->gap0[0x390], 0);
-		__int64 temp_241 = NieR::sub_491170((int*)pPlayerModelInfo->unsigned_int17084);
+		__int64* temp_241 = (__int64*)NieR::sub_491170((int*) & pPlayerModelInfo->unsigned_int17084);
 		if (temp_241 != 0)
 		{
-			NieR::setDrawBasePlayerMeshes((void*)(temp_241 + 0x390), 1);
+			NieR::setDrawBasePlayerMeshes(&temp_241[0x72], 0);
 		}
-		__int64 temp_243 = NieR::sub_491400((int*)pPlayerModelInfo->unsigned_int170C0);
+		__int64 temp_243 = NieR::sub_491400((int*)&pPlayerModelInfo->unsigned_int170C0);
 		if (temp_243 != 0)
 		{
 			*((int*)(temp_243 + 0x834)) = 0;
@@ -1080,7 +1100,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		}
 	}
 	pPlayerModelInfo->dword10628 = 0;
-	return result;
+	return 0x10000;
 }
 
 //Woeful_Wolf's Limit Break
@@ -1181,6 +1201,7 @@ void InitializeFunctionPointers()
 	NieR::sub_7c4b90 = (NieR::_sub_7c4b90)(modBase + 0x7c4b90);
 	NieR::sub_7c9cb0 = (NieR::_sub_7c9cb0)(modBase + 0x7c9cb0);
 	NieR::setDrawBasePlayerMeshes = (NieR::_SetDrawBasePlayerMeshes)(modBase + 0x197C70);
+	NieR::Lambda = (NieR::_lambda)(modBase + 0x744fa0);
 }
 
 void ConsoleSetup() 
@@ -1207,8 +1228,8 @@ int Main(PVOID lpParameter)
         return 1;
     }
 
-	//if (MH_CreateHook(NieR::UpdateEquippedActive, &hkUpdateEquippedActive, reinterpret_cast<LPVOID*>(&NieR::fpUpdateEquippedActive)) != MH_OK) return 1;
-	//if (MH_EnableHook(NieR::UpdateEquippedActive) != MH_OK) return 1;
+	if (MH_CreateHook(NieR::UpdateEquippedActive, &hkUpdateEquippedActive, reinterpret_cast<LPVOID*>(&NieR::fpUpdateEquippedActive)) != MH_OK) return 1;
+	if (MH_EnableHook(NieR::UpdateEquippedActive) != MH_OK) return 1;
 
     if (MH_CreateHook(NieR::ManageMeshVisibilities, &HkManageMeshVisibilites, reinterpret_cast<LPVOID*>(&NieR::fpManageMeshVisiblities)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::ManageMeshVisibilities) != MH_OK) return 1;
@@ -1219,8 +1240,10 @@ int Main(PVOID lpParameter)
 	if (MH_CreateHook(NieR::ValidateNonCharacterSpecificEquippable, &hkValidateNonSpecificCharacterEquippable, reinterpret_cast<LPVOID*>(&NieR::fpValidateNonSpecificCharacterEquippable)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::ValidateNonCharacterSpecificEquippable) != MH_OK) return 1;
 
+	/*
 	if (MH_CreateHook(NieR::GetOutfitIDFromItemID, &hkGetOutfitIDFromItemID, reinterpret_cast<LPVOID*>(&NieR::fpGetOutfitIDFromItemID)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::GetOutfitIDFromItemID) != MH_OK) return 1;
+	*/
 
 	if (MH_CreateHook(NieR::SetEquippedFromPause, &hkSetEquippedFromPause, reinterpret_cast<LPVOID*>(&NieR::fpSetEquippedFromPause)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::SetEquippedFromPause) != MH_OK) return 1;

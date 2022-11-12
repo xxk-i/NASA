@@ -42,7 +42,7 @@ namespace NieR
 
 	typedef __int64(__fastcall* _UpdateAccessoryOnUnpause)(PlayerModelInfo* pPlayerModelInfo);
 
-	typedef bool(__fastcall* _UpdateEquippedActive)(__int64, __int64, int);
+	typedef __int64(__fastcall* _UpdateEquippedActive)(__int64, __int64, int);
 
 	typedef void(__fastcall* _AnotherAccessoryThing)(PlayerModelInfo*, int);
 
@@ -66,7 +66,7 @@ namespace NieR
 
 
 	//Unknown functions
-	typedef __int64(__fastcall* _sub_745c50)(DWORD*);
+	typedef __int64(__fastcall* _sub_745c50)(int*);
 
 	typedef __int64(__fastcall* _sub_45a850)(__int64);
 
@@ -103,6 +103,8 @@ namespace NieR
 	typedef __int64(__fastcall* _sub_7c9cb0)(__int64, int, int);
 
 	typedef void(__fastcall* _sub_52e9e0)(__int64, int);
+	
+	typedef int* (__fastcall* _lambda)(int*, int*);
 
 	//Known-function pointers
 	extern _ManageMeshVisibilities ManageMeshVisibilities;
@@ -120,6 +122,7 @@ namespace NieR
 	extern _ValidateNonCharacterSpecificEquippable ValidateNonCharacterSpecificEquippable;
 	extern _SetOutfitFromPause SetOutfitFromPause;
 	extern _SetEquippedFromPause SetEquippedFromPause;
+	extern _lambda Lambda;
 
 	//Unknown-function pointers
 	extern _sub_52e9e0 sub_52e9e0;
@@ -150,6 +153,4 @@ namespace NieR
 	extern _UpdateEquippedActive fpUpdateEquippedActive;
 	extern _ValidateDLCArmor fpValidateDLCArmor;
 	extern _ValidateNonCharacterSpecificEquippable fpValidateNonSpecificCharacterEquippable;
-
-	extern __int64* lambda_meme(__int64* a1, __int64* a2);
 }
