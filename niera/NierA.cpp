@@ -5,8 +5,8 @@ namespace NieR
 	//Known-function pointers
 	_ManageMeshVisibilities ManageMeshVisibilities = NULL;
 	_SearchMeshGroupIndex SearchMeshGroupIndex = NULL;
-	_SetDrawBasePlayerMeshes setDrawBasePlayerMeshes = NULL;
-	_UpdateAccessoryOnUnpause updateAccessoryOnUnpause = NULL;
+	_SetDrawBasePlayerMeshes SetDrawBasePlayerMeshes = NULL;
+	_UpdateAccessoryOnUnpause UpdateAccessoryOnUnpause = NULL;
 	_UpdateEquippedActive UpdateEquippedActive = NULL;
 	_AnotherAccessoryThing AnotherAccessoryThing = NULL;
 	_ResolveNameFromItemID ResolveNameFromItemID = NULL;
@@ -34,6 +34,7 @@ namespace NieR
 	_sub_7463c0 sub_7463c0 = NULL;
 	_sub_3e6b70 sub_3e6b70 = NULL;
 	_sub_7459b0 sub_7459b0 = NULL;
+	_sub_745c10 sub_745c10 = NULL;
 	_sub_45a8c0 sub_45a8c0 = NULL;
 	_sub_3876a0 sub_3876a0 = NULL;
 	_GetPlayerFromPlayerNum GetPlayerFromPlayerNum = NULL;

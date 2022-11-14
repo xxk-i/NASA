@@ -88,6 +88,8 @@ namespace NieR
 
 	typedef __int64(__fastcall* _sub_7459b0)(__int64, const char*, int, __int64);
 
+	typedef int* (__fastcall* _sub_745c10)(__int64);
+
 	typedef __int64(__fastcall* _sub_45a8c0)(__int64);
 
 	typedef __int64(__fastcall* _sub_3876a0)(__int64*);
@@ -109,8 +111,8 @@ namespace NieR
 	//Known-function pointers
 	extern _ManageMeshVisibilities ManageMeshVisibilities;
 	extern _SearchMeshGroupIndex SearchMeshGroupIndex;
-	extern _SetDrawBasePlayerMeshes setDrawBasePlayerMeshes;
-	extern _UpdateAccessoryOnUnpause updateAccessoryOnUnpause;
+	extern _SetDrawBasePlayerMeshes SetDrawBasePlayerMeshes;
+	extern _UpdateAccessoryOnUnpause UpdateAccessoryOnUnpause;
 	extern _UpdateEquippedActive UpdateEquippedActive;
 	extern _AnotherAccessoryThing AnotherAccessoryThing;
 	extern _ResolveNameFromItemID ResolveNameFromItemID;
@@ -138,6 +140,7 @@ namespace NieR
 	extern _sub_7463c0 sub_7463c0;
 	extern _sub_3e6b70 sub_3e6b70;
 	extern _sub_7459b0 sub_7459b0;
+	extern _sub_745c10 sub_745c10;
 	extern _sub_45a8c0 sub_45a8c0;
 	extern _sub_3876a0 sub_3876a0;
 	extern _GetPlayerFromPlayerNum GetPlayerFromPlayerNum;
