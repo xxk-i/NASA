@@ -33,7 +33,7 @@ namespace NieR
 	_sub_491400 sub_491400 = NULL;
 	_sub_7463c0 sub_7463c0 = NULL;
 	_sub_3e6b70 sub_3e6b70 = NULL;
-	_sub_7459b0 sub_7459b0 = NULL;
+	_SetMeshToGroup SetMeshToGroup = NULL;
 	_sub_745c10 sub_745c10 = NULL;
 	_sub_45a8c0 sub_45a8c0 = NULL;
 	_sub_3876a0 sub_3876a0 = NULL;
@@ -50,4 +50,5 @@ namespace NieR
 	_UpdateEquippedActive fpUpdateEquippedActive = NULL;
 	_ValidateDLCArmor fpValidateDLCArmor = NULL;
 	_ValidateNonCharacterSpecificEquippable fpValidateNonSpecificCharacterEquippable = NULL;
+	_SetMeshToGroup fpSetMeshToGroup = NULL;
 }

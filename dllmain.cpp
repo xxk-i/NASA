@@ -7,136 +7,12 @@
 uintptr_t modBase = NULL;
 FILE* stream;
 
-//Yeah it's accessory time
-//I don't want to make a proper decomp of this, so we are only handling our cases
-__int64 hkUpdateAccessoryOnUnpause(NieR::PlayerModelInfo* pPlayerModelInfo)
+__int64 hkSetAccessory(__int64 a1, const char* meshGroup, int accessoryFileID, __int64 pUnk)
 {
-	__int64 result = 0;
-	__int64 accessory = 0;
-	int resolvedAccessoryID = 0;
-
-	__int64 v2 = NieR::sub_745c50((int*) & pPlayerModelInfo->unsigned_int170C0);
-	if (v2)
-		NieR::sub_7463c0(v2);
-
-	pPlayerModelInfo->unsigned_int170C0 = 0;
-	result = pPlayerModelInfo->accessoryEquipped - 1;
-
-	switch (pPlayerModelInfo->accessoryEquipped)
-	{
-	case 0x7:
-		resolvedAccessoryID = 0x4E006;
-		result = NieR::sub_7459b0((__int64)modBase + 0x1029558, "PlFaceMask", resolvedAccessoryID, 0i64);
-		if (result != 0)
-		{
-			//LAMBDA CALL
-			*(int*)((char*)pPlayerModelInfo + 0x170c0) = *NieR::sub_745c10(result);
-			result = NieR::sub_45a8c0(result);
-			accessory = result;
-			if (result != 0)
-			{
-				__int64 rcx_6 = *(__int64*)((char*)pPlayerModelInfo + 0x610);
-				if (rcx_6 != 0)
-				{
-					*(int*)(accessory + 0x830) = *NieR::sub_745c10(rcx_6);
-					int rax_7 = *(int*)(accessory + 0x5b8) - 0x4E003;
-					LONG base = 0x30D;
-					if (rax_7 > 9 || !_bittest(&base, rax_7))
-					{
-						int rsi_2 = 0;
-						int arg_8 = *(int*)(accessory + 0x830);
-						__int64* rax_9 = (__int64*)NieR::sub_3876a0((__int64*) & arg_8);
-						__int64 rbp_1 = 0;
-						if (rax_9 != 0)
-						{
-							int rax_10 = rax_9[0xB7];
-							if (rax_10 == 0x10200 || rax_10 == 0x10203)
-							{
-								rsi_2 = 1;
-								rbp_1 = 1;
-							}
-						}
-						NieR::SetDrawBasePlayerMeshes((void*)(accessory + 0x390), 0);
-						if (rsi_2 < *(int*)(accessory + 0x3a8))
-						{
-							__int64 rax_11 = (rbp_1 * 0x70);
-							void* rax_12 = (void*)(rax_11 + *(__int64*)(accessory + 0x3a0));
-							if (rax_11 != (-*(__int64*)(accessory + 0x3a0)))
-							{
-								*(int*)((char*)rax_12 + 0x64) = 1;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		//resolvedAccessoryID = 0x4E006;
-		//
-		//result = NieR::sub_7459b0((__int64)modBase + 0x1029558, "PlFaceMask", resolvedAccessoryID, 0i64);
-		//__int64 stored_result = result;
-		//if (!result)
-		//	return result;
-
-		//__int64 v6 = result + 0x30;
-		//pPlayerModelInfo->unsigned_int170C0 = *NieR::sub_745c10(result);
-		//result = NieR::sub_45a8c0(stored_result);
-		//NieR::PlayerModelInfo* anotherPlayer = (NieR::PlayerModelInfo*)(result);
-
-		///*
-		//const unsigned int* v6 = (const unsigned int*)result + 0x30;
-		//NieR::Lambda((int*) & pPlayerModelInfo->unsigned_int170C0, (int*)v6);
-		//result = NieR::sub_45a850(stored_result);
-		//NieR::PlayerModelInfo* anotherPlayer = (NieR::PlayerModelInfo*)result;
-		//*/
-
-		//// FAIL HERE FIXED BY LAMBDA
-		//if (!result)
-		//	return result;
-		//
-		//__int64 v8 = *(__int64*)&pPlayerModelInfo->gap5BC[0x54];
-		//if (v8)
-		//{
-		//	const unsigned int* v9 = (const unsigned int*)v8 + 0x30;
-		//	*(int*)& anotherPlayer->gap5BC[0x274] = *v9;
-		//	//NieR::Lambda((int*) & anotherPlayer->gap5BC[0x274], (int*)v9);
-		//	__int64 v10 = anotherPlayer->currentPlayer - 0x4E003;
-		//	LONG v11 = 0x30D;
-		//	//FAIL HERE
-		//	if (v10 > 9 || !_bittest(&v11, v10))
-		//	{
-		//		__int64 MeshGroupIndex = 0;
-		//		int v13 = *(int*)&anotherPlayer->gap5BC[0x274];
-		//		__int64 player = NieR::sub_3876a0((__int64*)&v13);
-		//		if (player)
-		//		{
-		//			DWORD currentPlayer = *(DWORD*)(player + 0x5B8);
-		//			if (currentPlayer == 0x10200 || currentPlayer == 0x10203)
-		//			{
-		//				MeshGroupIndex = 1;
-		//			}
-		//		}
-		//		MeshGroupIndex = 1;
-		//		NieR::SetDrawBasePlayerMeshes(&anotherPlayer->gap0[0x390], 0);
-		//		//set mesh visible
-		//		if (MeshGroupIndex < anotherPlayer->MaxMeshGroupIndex)
-		//		{
-		//			__int64 v17 = (__int64)anotherPlayer->mesh_groups + 0x70 * (int)MeshGroupIndex;
-		//			if (v17)
-		//				*(DWORD*)(v17 + 0x64) = 1;
-		//		}
-		//	}
-		//}
-		//
-		
-		//This sets the single mesh group to visible inside of the accessory mesh
-		if (accessory != 0)
-			*(int*)(accessory + 0x834) = 1;
-
-		return pPlayerModelInfo->accessoryEquipped - 8;
-	}
-	return NieR::fpUpdateAccessoryOnUnpause(pPlayerModelInfo);
+	printf("Mesh Group: %s\t FileID: %#010x\n", meshGroup, accessoryFileID);
+	return NieR::fpSetMeshToGroup(a1, meshGroup, accessoryFileID, pUnk);
 }
+
 
 //Used a lot in the executable
 __int64* lambda_meme(__int64* a1, int* a2)
@@ -386,6 +262,79 @@ void set_mesh_visible(NieR::PlayerModelInfo* pPlayerModelInfo, const char* mesh_
 			}
         }
     }
+}
+
+//Yeah it's accessory time
+//I don't want to make a proper decomp of this, so we are only handling our cases
+__int64 hkUpdateAccessoryOnUnpause(NieR::PlayerModelInfo* pPlayerModelInfo)
+{
+	__int64 result = 0;
+	__int64 accessory = 0;
+	int resolvedAccessoryID = 0;
+
+	__int64 v2 = NieR::sub_745c50((int*) & pPlayerModelInfo->unsigned_int170C0);
+	if (v2)
+		NieR::sub_7463c0(v2);
+
+	pPlayerModelInfo->unsigned_int170C0 = 0;
+	result = pPlayerModelInfo->accessoryEquipped - 1;
+
+	switch (pPlayerModelInfo->accessoryEquipped)
+	{
+	case 0x1:
+		resolvedAccessoryID = 0x4E001;
+		result = NieR::SetMeshToGroup((__int64)modBase + 0x1029558, "Layout", 0x4E006, 0i64);	//last arg is some pointer
+		if (result != 0)
+		{
+			//LAMBDA CALL
+			*(int*)((char*)pPlayerModelInfo + 0x170c0) = *NieR::sub_745c10(result);
+			result = NieR::sub_45a8c0(result);
+			accessory = result;
+			if (result != 0)
+			{
+				__int64 rcx_6 = *(__int64*)((char*)pPlayerModelInfo + 0x610);
+				if (rcx_6 != 0)
+				{
+					*(int*)(accessory + 0x830) = *NieR::sub_745c10(rcx_6);
+					int rax_7 = *(int*)(accessory + 0x5b8) - 0x4E003;
+					LONG base = 0x30D;
+					if (rax_7 > 9 || !_bittest(&base, rax_7))
+					{
+						int rsi_2 = 0;
+						int arg_8 = *(int*)(accessory + 0x830);
+						__int64* rax_9 = (__int64*)NieR::sub_3876a0((__int64*) & arg_8);
+						__int64 rbp_1 = 0;
+						if (rax_9 != 0)
+						{
+							int rax_10 = rax_9[0xB7];
+							if (rax_10 == 0x10200 || rax_10 == 0x10203)
+							{
+								rsi_2 = 1;
+								rbp_1 = 1;
+							}
+						}
+						NieR::SetDrawBasePlayerMeshes((void*)(accessory + 0x390), 0);
+						if (rsi_2 < *(int*)(accessory + 0x3a8))
+						{
+							__int64 rax_11 = (rbp_1 * 0x70);
+							void* rax_12 = (void*)(rax_11 + *(__int64*)(accessory + 0x3a0));
+							if (rax_11 != (-*(__int64*)(accessory + 0x3a0)))
+							{
+								*(int*)((char*)rax_12 + 0x64) = 1;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		//This sets the single mesh group to visible inside of the accessory mesh
+		if (accessory != 0)
+			*(int*)(accessory + 0x834) = 1;
+
+		return pPlayerModelInfo->accessoryEquipped - 8;
+	}
+	return NieR::fpUpdateAccessoryOnUnpause(pPlayerModelInfo);
 }
 
 __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
@@ -660,8 +609,12 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 
 			if (( ((pPlayerModelInfo->dword16CEC) != 0 && (pPlayerModelInfo->accessoryEquipped) == 0xe)))
 			{
+				set_mesh_invisible(pPlayerModelInfo, "Eyemask");
+				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyemask");
+				/*
 				if (pPlayerModelInfo->outfitEquipped == 0) set_mesh_visible(pPlayerModelInfo, "Eyemask");
 				else if (pPlayerModelInfo->outfitEquipped == 4) set_mesh_visible(pPlayerModelInfo, "NS_2P_Eyemask");
+				*/
 			}
 
 			/*
@@ -1327,7 +1280,7 @@ void InitializeFunctionPointers()
 	NieR::sub_3e6b70 = (NieR::_sub_3e6b70)(modBase + 0x3e6B70);
 	NieR::sub_45a8c0 = (NieR::_sub_45a8c0)(modBase + 0x45a8c0);
 	NieR::sub_3876a0 = (NieR::_sub_3876a0)(modBase + 0x3876a0);
-	NieR::sub_7459b0 = (NieR::_sub_7459b0)(modBase + 0x7459b0);
+	NieR::SetMeshToGroup = (NieR::_SetMeshToGroup)(modBase + 0x7459b0);
 	NieR::sub_745c10 = (NieR::_sub_745c10)(modBase + 0x745c10);
 	NieR::sub_7e6e60 = (NieR::_sub_7e6e60)(modBase + 0x7e6e60);
 	NieR::GetPlayerFromPlayerNum = (NieR::_GetPlayerFromPlayerNum)(modBase + 0x3084c0);
@@ -1384,6 +1337,12 @@ int Main(PVOID lpParameter)
 
 	if (MH_CreateHook(NieR::SetEquippedFromPause, &hkSetEquippedFromPause, reinterpret_cast<LPVOID*>(&NieR::fpSetEquippedFromPause)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::SetEquippedFromPause) != MH_OK) return 1;
+
+	
+	/*
+	if (MH_CreateHook(NieR::SetMeshToGroup, &hkSetAccessory, reinterpret_cast<LPVOID*>(&NieR::fpSetMeshToGroup)) != MH_OK) return 1;
+	if (MH_EnableHook(NieR::SetMeshToGroup) != MH_OK) return 1;
+	*/
 
     return 0;
 }

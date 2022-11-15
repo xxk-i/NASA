@@ -86,7 +86,7 @@ namespace NieR
 
 	typedef void(__fastcall* _sub_3e6b70)(__int64);
 
-	typedef __int64(__fastcall* _sub_7459b0)(__int64, const char*, int, __int64);
+	typedef __int64(__fastcall* _SetMeshToGroup)(__int64, const char*, int, __int64);
 
 	typedef int* (__fastcall* _sub_745c10)(__int64);
 
@@ -139,7 +139,7 @@ namespace NieR
 	extern _sub_491400 sub_491400;
 	extern _sub_7463c0 sub_7463c0;
 	extern _sub_3e6b70 sub_3e6b70;
-	extern _sub_7459b0 sub_7459b0;
+	extern _SetMeshToGroup SetMeshToGroup;
 	extern _sub_745c10 sub_745c10;
 	extern _sub_45a8c0 sub_45a8c0;
 	extern _sub_3876a0 sub_3876a0;
@@ -156,4 +156,5 @@ namespace NieR
 	extern _UpdateEquippedActive fpUpdateEquippedActive;
 	extern _ValidateDLCArmor fpValidateDLCArmor;
 	extern _ValidateNonCharacterSpecificEquippable fpValidateNonSpecificCharacterEquippable;
+	extern _SetMeshToGroup fpSetMeshToGroup;
 }
