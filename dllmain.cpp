@@ -337,6 +337,7 @@ __int64 hkUpdateAccessoryOnUnpause(NieR::PlayerModelInfo* pPlayerModelInfo)
 	return NieR::fpUpdateAccessoryOnUnpause(pPlayerModelInfo);
 }
 
+//Workaround ACTIVE not working by checking equipped outfit
 __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 {
 	if (!a1)
@@ -350,6 +351,15 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
+		
+		//Workaround
+		if (v9->outfitEquipped == 4)
+		{
+			NieR::SetOutfitFromPause(v9, 0, 1);
+			*(int*)(modBase + 0x13fd4ac) = 1;
+			return 1;
+		}
+
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, 4, 1);
@@ -364,6 +374,15 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
+
+		//Workaround
+		if (v9->outfitEquipped == 5)
+		{
+			NieR::SetOutfitFromPause(v9, 0, 1);
+			*(int*)(modBase + 0x13fd4ac) = 1;
+			return 1;
+		}
+
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, 5, 1);
@@ -378,6 +397,15 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
+
+		//Workaround
+		if (v9->outfitEquipped == 2)
+		{
+			NieR::SetOutfitFromPause(v9, 0, 1);
+			*(int*)(modBase + 0x13fd4ac) = 1;
+			return 1;
+		}
+
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, 2, 1);
@@ -392,6 +420,15 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
+
+		//Workaround
+		if (v9->outfitEquipped == 3)
+		{
+			NieR::SetOutfitFromPause(v9, 0, 1);
+			*(int*)(modBase + 0x13fd4ac) = 1;
+			return 1;
+		}
+
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, 3, 1);
@@ -406,6 +443,15 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
+
+		//Workaround
+		if (v9->outfitEquipped == 3)
+		{
+			NieR::SetOutfitFromPause(v9, 0, 1);
+			*(int*)(modBase + 0x13fd4ac) = 1;
+			return 1;
+		}
+
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, 3, 1);
@@ -420,6 +466,15 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
+
+		//Workaround
+		if (v9->outfitEquipped == 2)
+		{
+			NieR::SetOutfitFromPause(v9, 0, 1);
+			*(int*)(modBase + 0x13fd4ac) = 1;
+			return 1;
+		}
+
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, 2, 1);
@@ -676,7 +731,10 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 				set_mesh_visible(pPlayerModelInfo, "Armor_Body");
 				set_mesh_visible(pPlayerModelInfo, "Armor_Head");
 			}
+
 		}
+		//TODO remove when mask accessory support is added
+		set_mesh_invisible(pPlayerModelInfo, "Hair_Mask");
 	}
 
 
@@ -1315,8 +1373,10 @@ int Main(PVOID lpParameter)
         return 1;
     }
 
+	/*
 	if (MH_CreateHook(NieR::UpdateAccessoryOnUnpause, &hkUpdateAccessoryOnUnpause, reinterpret_cast<LPVOID*>(&NieR::fpUpdateAccessoryOnUnpause)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::UpdateAccessoryOnUnpause) != MH_OK) return 1;
+	*/
 
 	if (MH_CreateHook(NieR::UpdateEquippedActive, &hkUpdateEquippedActive, reinterpret_cast<LPVOID*>(&NieR::fpUpdateEquippedActive)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::UpdateEquippedActive) != MH_OK) return 1;
