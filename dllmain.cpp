@@ -662,23 +662,11 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 				//set_mesh_invisible(pPlayerModelInfo, "Eyelash_serious");
 			}
 
-			if (( ((pPlayerModelInfo->dword16CEC) != 0 && (pPlayerModelInfo->accessoryEquipped) == 0xe)))
+			if (( (pPlayerModelInfo->dword16CEC != 0 ) && (pPlayerModelInfo->accessoryEquipped == 0xe) || (pPlayerModelInfo->accessoryEquipped == 0x3 )))
 			{
 				set_mesh_invisible(pPlayerModelInfo, "Eyemask");
 				set_mesh_invisible(pPlayerModelInfo, "NS_2P_Eyemask");
-				/*
-				if (pPlayerModelInfo->outfitEquipped == 0) set_mesh_visible(pPlayerModelInfo, "Eyemask");
-				else if (pPlayerModelInfo->outfitEquipped == 4) set_mesh_visible(pPlayerModelInfo, "NS_2P_Eyemask");
-				*/
 			}
-
-			/*
-			if ((pPlayerModelInfo->accessoryEquipped) != 3)
-			{
-				if (pPlayerModelInfo->outfitEquipped == 0) set_mesh_visible(pPlayerModelInfo, "Eyemask");
-				else if (pPlayerModelInfo->outfitEquipped == 4) set_mesh_visible(pPlayerModelInfo, "NS_2P_Eyemask");
-			}
-			*/
 
 			if ((pPlayerModelInfo->dwordisFacialNormal) == 1)
 			{
