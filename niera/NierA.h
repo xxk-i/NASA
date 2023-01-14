@@ -3,6 +3,7 @@
 
 namespace NieR
 {
+	// entrity struct
 	struct PlayerModelInfo {
 		BYTE gap0[0x398];
 		void* pWMB;
@@ -34,35 +35,35 @@ namespace NieR
 	};
 
 	//Known functions
-	typedef __int64(__fastcall* _ManageMeshVisibilities)(__int64 pPlayerModelInfo);
+	typedef __int64(__fastcall* FnManageMeshVisibilities)(__int64 pEntity);
 
-	typedef int(__fastcall* _SearchMeshGroupIndex)(void* pWMB, const char* mesh_name);
+	typedef int(__fastcall* FnSearchMeshGroupIndex)(void* pWMB, const char* mesh_name);
 
-	typedef __int64(__fastcall* _SetDrawBasePlayerMeshes)(void* a1, int a2);
+	typedef __int64(__fastcall* FnSetDrawBasePlayerMeshes)(void* a1, int a2);
 
-	typedef __int64(__fastcall* _UpdateAccessoryOnUnpause)(PlayerModelInfo* pPlayerModelInfo);
+	typedef __int64(__fastcall* FnUpdateAccessoryOnUnpause)(PlayerModelInfo* pPlayerModelInfo);
 
-	typedef __int64(__fastcall* _UpdateEquippedActive)(__int64, __int64, int);
+	typedef __int64(__fastcall* FnUpdateEquippedActive)(__int64, __int64, int);
 
-	typedef void(__fastcall* _AnotherAccessoryThing)(PlayerModelInfo*, int);
+	typedef void(__fastcall* FnAnotherAccessoryThing)(PlayerModelInfo*, int);
 
-	typedef char* (__fastcall* _ResolveNameFromItemID)(__int64, __int64);
+	typedef char* (__fastcall* FnResolveNameFromItemID)(__int64, __int64);
 
-	typedef int(__fastcall* _GetAccessoryIDFromItemID)(__int64, int);
+	typedef int(__fastcall* FnGetAccessoryIDFromItemID)(__int64, int);
 
-	typedef int(__fastcall* _GetOutfitIDFromItemID)(__int64, int);
+	typedef int(__fastcall* FnGetOutfitIDFromItemID)(__int64, int);
 
-	typedef bool(__fastcall* _ValidateAccessory)(__int64, __int64, int);
+	typedef bool(__fastcall* FnValidateAccessory)(__int64, __int64, int);
 
-	typedef bool(__fastcall* _ValidateDLCArmor)(__int64, __int64, int);
+	typedef bool(__fastcall* FnValidateDLCArmor)(__int64, __int64, int);
 
-	typedef bool(__fastcall* _ValidatePodSkins)(__int64, int);
+	typedef bool(__fastcall* FnValidatePodSkins)(__int64, int);
 
-	typedef bool(__fastcall* _ValidateNonCharacterSpecificEquippable)(__int64, int);
+	typedef bool(__fastcall* FnValidateNonCharacterSpecificEquippable)(__int64, int);
 
-	typedef void(__fastcall* _SetOutfitFromPause)(PlayerModelInfo*, int, int);
+	typedef void(__fastcall* FnSetOutfitFromPause)(PlayerModelInfo*, int, int);
 
-	typedef __int64(__fastcall* _SetEquippedFromPause)(__int64, int);
+	typedef __int64(__fastcall* FnSetEquippedFromPause)(__int64, int);
 
 
 	//Unknown functions
@@ -86,7 +87,7 @@ namespace NieR
 
 	typedef void(__fastcall* _sub_3e6b70)(__int64);
 
-	typedef __int64(__fastcall* _SetMeshToGroup)(__int64, const char*, int, __int64);
+	typedef __int64(__fastcall* FnSetMeshToGroup)(__int64, const char*, int, __int64);
 
 	typedef int* (__fastcall* _sub_745c10)(__int64);
 
@@ -96,7 +97,7 @@ namespace NieR
 
 	typedef bool(__fastcall* _sub_7e6e60)(__int64, int, __int64);
 
-	typedef __int64(__fastcall* _GetPlayerFromPlayerNum)(__int64);
+	typedef __int64(__fastcall* FnGetPlayerFromPlayerNum)(__int64);
 
 	typedef __int64(__fastcall* _sub_7c4b50)();
 
@@ -106,25 +107,25 @@ namespace NieR
 
 	typedef void(__fastcall* _sub_52e9e0)(__int64, int);
 	
-	typedef int* (__fastcall* _lambda)(int*, int*);
+	typedef int* (__fastcall* FnLambda)(int*, int*);
 
 	//Known-function pointers
-	extern _ManageMeshVisibilities ManageMeshVisibilities;
-	extern _SearchMeshGroupIndex SearchMeshGroupIndex;
-	extern _SetDrawBasePlayerMeshes SetDrawBasePlayerMeshes;
-	extern _UpdateAccessoryOnUnpause UpdateAccessoryOnUnpause;
-	extern _UpdateEquippedActive UpdateEquippedActive;
-	extern _AnotherAccessoryThing AnotherAccessoryThing;
-	extern _ResolveNameFromItemID ResolveNameFromItemID;
-	extern _GetAccessoryIDFromItemID GetAccessoryIDFromItemID;
-	extern _GetOutfitIDFromItemID GetOutfitIDFromItemID;
-	extern _ValidateAccessory ValidateAccessory;
-	extern _ValidateDLCArmor ValidateDLCArmor;
-	extern _ValidatePodSkins ValidatePodSkins;
-	extern _ValidateNonCharacterSpecificEquippable ValidateNonCharacterSpecificEquippable;
-	extern _SetOutfitFromPause SetOutfitFromPause;
-	extern _SetEquippedFromPause SetEquippedFromPause;
-	extern _lambda Lambda;
+	extern FnManageMeshVisibilities ManageMeshVisibilities;
+	extern FnSearchMeshGroupIndex SearchMeshGroupIndex;
+	extern FnSetDrawBasePlayerMeshes SetDrawBasePlayerMeshes;
+	extern FnUpdateAccessoryOnUnpause UpdateAccessoryOnUnpause;
+	extern FnUpdateEquippedActive UpdateEquippedActive;
+	extern FnAnotherAccessoryThing AnotherAccessoryThing;
+	extern FnResolveNameFromItemID ResolveNameFromItemID;
+	extern FnGetAccessoryIDFromItemID GetAccessoryIDFromItemID;
+	extern FnGetOutfitIDFromItemID GetOutfitIDFromItemID;
+	extern FnValidateAccessory ValidateAccessory;
+	extern FnValidateDLCArmor ValidateDLCArmor;
+	extern FnValidatePodSkins ValidatePodSkins;
+	extern FnValidateNonCharacterSpecificEquippable ValidateNonCharacterSpecificEquippable;
+	extern FnSetOutfitFromPause SetOutfitFromPause;
+	extern FnSetEquippedFromPause SetEquippedFromPause;
+	extern FnLambda Lambda;
 
 	//Unknown-function pointers
 	extern _sub_52e9e0 sub_52e9e0;
@@ -139,22 +140,22 @@ namespace NieR
 	extern _sub_491400 sub_491400;
 	extern _sub_7463c0 sub_7463c0;
 	extern _sub_3e6b70 sub_3e6b70;
-	extern _SetMeshToGroup SetMeshToGroup;
+	extern FnSetMeshToGroup SetMeshToGroup;
 	extern _sub_745c10 sub_745c10;
 	extern _sub_45a8c0 sub_45a8c0;
 	extern _sub_3876a0 sub_3876a0;
-	extern _GetPlayerFromPlayerNum GetPlayerFromPlayerNum;
+	extern FnGetPlayerFromPlayerNum GetPlayerFromPlayerNum;
 	extern _sub_7c4b50 sub_7c4b50;
 	extern _sub_7c4b90 sub_7c4b90;
 	extern _sub_7c9cb0 sub_7c9cb0;
 
 	//Saved original functions from hooks
-	extern _ManageMeshVisibilities fpManageMeshVisiblities;
-	extern _GetOutfitIDFromItemID fpGetOutfitIDFromItemID;
-	extern _SetEquippedFromPause fpSetEquippedFromPause;
-	extern _UpdateAccessoryOnUnpause fpUpdateAccessoryOnUnpause;
-	extern _UpdateEquippedActive fpUpdateEquippedActive;
-	extern _ValidateDLCArmor fpValidateDLCArmor;
-	extern _ValidateNonCharacterSpecificEquippable fpValidateNonSpecificCharacterEquippable;
-	extern _SetMeshToGroup fpSetMeshToGroup;
+	extern FnManageMeshVisibilities ManageMeshVisiblities;
+	extern FnGetOutfitIDFromItemID GetOutfitIDFromItemID;
+	extern FnSetEquippedFromPause SetEquippedFromPause;
+	extern FnUpdateAccessoryOnUnpause UpdateAccessoryOnUnpause;
+	extern FnUpdateEquippedActive UpdateEquippedActive;
+	extern FnValidateDLCArmor ValidateDLCArmor;
+	extern FnValidateNonCharacterSpecificEquippable ValidateNonSpecificCharacterEquippable;
+	extern FnSetMeshToGroup SetMeshToGroup;
 }
