@@ -10,7 +10,7 @@ FILE* stream;
 __int64 hkSetAccessory(__int64 a1, const char* meshGroup, int accessoryFileID, __int64 pUnk)
 {
 	printf("Mesh Group: %s\t FileID: %#010x\n", meshGroup, accessoryFileID);
-	return NieR::fpSetMeshToGroup(a1, meshGroup, accessoryFileID, pUnk);
+	return NieR::SetMeshToGroup(a1, meshGroup, accessoryFileID, pUnk);
 }
 
 
@@ -37,7 +37,7 @@ __int64 hkGetOutfitIDFromItemID(__int64 item_base, int item_ID)
 		return 8;
 	}
 
-	return NieR::fpGetOutfitIDFromItemID(item_base, item_ID);
+	return NieR::GetOutfitIDFromItemID(item_base, item_ID);
 }
 
 /*
@@ -334,7 +334,7 @@ __int64 hkUpdateAccessoryOnUnpause(NieR::PlayerModelInfo* pPlayerModelInfo)
 
 		return pPlayerModelInfo->accessoryEquipped - 8;
 	}
-	return NieR::fpUpdateAccessoryOnUnpause(pPlayerModelInfo);
+	return NieR::UpdateAccessoryOnUnpause(pPlayerModelInfo);
 }
 
 //Workaround ACTIVE not working by checking equipped outfit
@@ -483,7 +483,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		}
 	}
 
-	return NieR::fpSetEquippedFromPause(a1, item_id);
+	return NieR::SetEquippedFromPause(a1, item_id);
 }
 
 //Hook
@@ -1299,20 +1299,20 @@ void LimitBreak()
 
 void InitializeFunctionPointers()
 {
-    NieR::ManageMeshVisibilities = (NieR::_ManageMeshVisibilities)(modBase + 0x51B940);
-    NieR::SearchMeshGroupIndex = (NieR::_SearchMeshGroupIndex)(modBase + 0x1910B0);
-	NieR::UpdateAccessoryOnUnpause = (NieR::_UpdateAccessoryOnUnpause)(modBase + 0x482360);
-	NieR::UpdateEquippedActive = (NieR::_UpdateEquippedActive)(modBase + 0x7f50f0);
-	NieR::ValidateAccessory = (NieR::_ValidateAccessory)(modBase + 0x7f4830);
-	NieR::ValidateDLCArmor = (NieR::_ValidateDLCArmor)(modBase + 0x7f4770);
-	NieR::ValidatePodSkins = (NieR::_ValidatePodSkins)(modBase + 0x7f6d90);
-	NieR::ValidateNonCharacterSpecificEquippable = (NieR::_ValidateNonCharacterSpecificEquippable)(modBase + 0x7f4020);
-	NieR::AnotherAccessoryThing = (NieR::_AnotherAccessoryThing)(modBase + 0x4eca60);
-	NieR::SetOutfitFromPause = (NieR::_SetOutfitFromPause)(modBase + 0x475eb0);
-	NieR::SetEquippedFromPause = (NieR::_SetEquippedFromPause)(modBase + 0x843ee0);
-	NieR::ResolveNameFromItemID = (NieR::_ResolveNameFromItemID)(modBase + 0x7e35c0);
-	NieR::GetAccessoryIDFromItemID = (NieR::_GetAccessoryIDFromItemID)(modBase + 0x7d4310);
-	NieR::GetOutfitIDFromItemID = (NieR::_GetOutfitIDFromItemID)(modBase + 0x7d42a0);
+    NieR::ManageMeshVisibilities = (NieR::FnManageMeshVisibilities)(modBase + 0x51B940);
+    NieR::SearchMeshGroupIndex = (NieR::FnSearchMeshGroupIndex)(modBase + 0x1910B0);
+	NieR::UpdateAccessoryOnUnpause = (NieR::FnUpdateAccessoryOnUnpause)(modBase + 0x482360);
+	NieR::UpdateEquippedActive = (NieR::FnUpdateEquippedActive)(modBase + 0x7f50f0);
+	NieR::ValidateAccessory = (NieR::FnValidateAccessory)(modBase + 0x7f4830);
+	NieR::ValidateDLCArmor = (NieR::FnValidateDLCArmor)(modBase + 0x7f4770);
+	NieR::ValidatePodSkins = (NieR::FnValidatePodSkins)(modBase + 0x7f6d90);
+	NieR::ValidateNonCharacterSpecificEquippable = (NieR::FnValidateNonCharacterSpecificEquippable)(modBase + 0x7f4020);
+	NieR::AnotherAccessoryThing = (NieR::FnAnotherAccessoryThing)(modBase + 0x4eca60);
+	NieR::SetOutfitFromPause = (NieR::FnSetOutfitFromPause)(modBase + 0x475eb0);
+	NieR::SetEquippedFromPause = (NieR::FnSetEquippedFromPause)(modBase + 0x843ee0);
+	NieR::ResolveNameFromItemID = (NieR::FnResolveNameFromItemID)(modBase + 0x7e35c0);
+	NieR::GetAccessoryIDFromItemID = (NieR::FnGetAccessoryIDFromItemID)(modBase + 0x7d4310);
+	NieR::GetOutfitIDFromItemID = (NieR::FnGetOutfitIDFromItemID)(modBase + 0x7d42a0);
 	NieR::sub_52e9e0 = (NieR::_sub_52e9e0)(modBase + 0x52e9e0);
 	NieR::sub_745c50 = (NieR::_sub_745c50)(modBase + 0x745C50);
 	NieR::sub_45a850 = (NieR::_sub_45a850)(modBase + 0x45A850);
@@ -1326,15 +1326,15 @@ void InitializeFunctionPointers()
 	NieR::sub_3e6b70 = (NieR::_sub_3e6b70)(modBase + 0x3e6B70);
 	NieR::sub_45a8c0 = (NieR::_sub_45a8c0)(modBase + 0x45a8c0);
 	NieR::sub_3876a0 = (NieR::_sub_3876a0)(modBase + 0x3876a0);
-	NieR::SetMeshToGroup = (NieR::_SetMeshToGroup)(modBase + 0x7459b0);
+	NieR::SetMeshToGroup = (NieR::FnSetMeshToGroup)(modBase + 0x7459b0);
 	NieR::sub_745c10 = (NieR::_sub_745c10)(modBase + 0x745c10);
 	NieR::sub_7e6e60 = (NieR::_sub_7e6e60)(modBase + 0x7e6e60);
-	NieR::GetPlayerFromPlayerNum = (NieR::_GetPlayerFromPlayerNum)(modBase + 0x3084c0);
+	NieR::GetPlayerFromPlayerNum = (NieR::FnGetPlayerFromPlayerNum)(modBase + 0x3084c0);
 	NieR::sub_7c4b50 = (NieR::_sub_7c4b50)(modBase + 0x7c4b50);
 	NieR::sub_7c4b90 = (NieR::_sub_7c4b90)(modBase + 0x7c4b90);
 	NieR::sub_7c9cb0 = (NieR::_sub_7c9cb0)(modBase + 0x7c9cb0);
-	NieR::SetDrawBasePlayerMeshes = (NieR::_SetDrawBasePlayerMeshes)(modBase + 0x197C70);
-	NieR::Lambda = (NieR::_lambda)(modBase + 0x744fa0);
+	NieR::SetDrawBasePlayerMeshes = (NieR::FnSetDrawBasePlayerMeshes)(modBase + 0x197C70);
+	NieR::Lambda = (NieR::FnLambda)(modBase + 0x744fa0);
 }
 
 void ConsoleSetup() 
@@ -1366,16 +1366,16 @@ int Main(PVOID lpParameter)
 	if (MH_EnableHook(NieR::UpdateAccessoryOnUnpause) != MH_OK) return 1;
 	*/
 
-	if (MH_CreateHook(NieR::UpdateEquippedActive, &hkUpdateEquippedActive, reinterpret_cast<LPVOID*>(&NieR::fpUpdateEquippedActive)) != MH_OK) return 1;
+	if (MH_CreateHook(NieR::UpdateEquippedActive, &hkUpdateEquippedActive, reinterpret_cast<LPVOID*>(&NieR::UpdateEquippedActive)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::UpdateEquippedActive) != MH_OK) return 1;
 
-    if (MH_CreateHook(NieR::ManageMeshVisibilities, &HkManageMeshVisibilites, reinterpret_cast<LPVOID*>(&NieR::fpManageMeshVisiblities)) != MH_OK) return 1;
+    if (MH_CreateHook(NieR::ManageMeshVisibilities, &HkManageMeshVisibilites, reinterpret_cast<LPVOID*>(&NieR::ManageMeshVisiblities)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::ManageMeshVisibilities) != MH_OK) return 1;
 
-	if (MH_CreateHook(NieR::ValidateDLCArmor, &hkValidateDLCArmor, reinterpret_cast<LPVOID*>(&NieR::fpValidateDLCArmor)) != MH_OK) return 1;
+	if (MH_CreateHook(NieR::ValidateDLCArmor, &hkValidateDLCArmor, reinterpret_cast<LPVOID*>(&NieR::ValidateDLCArmor)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::ValidateDLCArmor) != MH_OK) return 1;
 
-	if (MH_CreateHook(NieR::ValidateNonCharacterSpecificEquippable, &hkValidateNonSpecificCharacterEquippable, reinterpret_cast<LPVOID*>(&NieR::fpValidateNonSpecificCharacterEquippable)) != MH_OK) return 1;
+	if (MH_CreateHook(NieR::ValidateNonCharacterSpecificEquippable, &hkValidateNonSpecificCharacterEquippable, reinterpret_cast<LPVOID*>(&NieR::ValidateNonSpecificCharacterEquippable)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::ValidateNonCharacterSpecificEquippable) != MH_OK) return 1;
 
 	/*
@@ -1383,7 +1383,7 @@ int Main(PVOID lpParameter)
 	if (MH_EnableHook(NieR::GetOutfitIDFromItemID) != MH_OK) return 1;
 	*/
 
-	if (MH_CreateHook(NieR::SetEquippedFromPause, &hkSetEquippedFromPause, reinterpret_cast<LPVOID*>(&NieR::fpSetEquippedFromPause)) != MH_OK) return 1;
+	if (MH_CreateHook(NieR::SetEquippedFromPause, &hkSetEquippedFromPause, reinterpret_cast<LPVOID*>(&NieR::SetEquippedFromPause)) != MH_OK) return 1;
 	if (MH_EnableHook(NieR::SetEquippedFromPause) != MH_OK) return 1;
 
 	
