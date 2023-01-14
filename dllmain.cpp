@@ -224,7 +224,7 @@ __int64 hkValidateNonSpecificCharacterEquippable(__int64 item_base, int item_id)
 
 void SetMeshInvisible(NieR::PlayerModelInfo* pPlayerModelInfo, const char* mesh_name)
 {
-	if (pPlayerModelInfo->m_pModelData->pWMB)
+	if (pPlayerModelInfo->m_pModelData)
 	{
 		int part_index = NieR::SearchMeshGroupIndex(pPlayerModelInfo->m_pModelData, mesh_name);
 		if (part_index >= 0 && part_index < pPlayerModelInfo->m_nParts)

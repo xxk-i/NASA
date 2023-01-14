@@ -18,7 +18,7 @@ namespace NieR
 		char pad[0x70];
 	};
 
-	// entrity struct
+	// entity struct
 	struct PlayerModelInfo {
 		BYTE gap0[0x390];
 		struct CModelManager* m_pModelManager;	//0x0000
