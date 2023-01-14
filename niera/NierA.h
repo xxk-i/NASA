@@ -3,6 +3,7 @@
 
 namespace NieR
 {
+	// entrity struct
 	struct PlayerModelInfo {
 		BYTE gap0[0x398];
 		void* pWMB;
@@ -34,7 +35,7 @@ namespace NieR
 	};
 
 	//Known functions
-	typedef __int64(__fastcall* FnManageMeshVisibilities)(__int64 pPlayerModelInfo);
+	typedef __int64(__fastcall* FnManageMeshVisibilities)(__int64 pEntity);
 
 	typedef int(__fastcall* FnSearchMeshGroupIndex)(void* pWMB, const char* mesh_name);
 
