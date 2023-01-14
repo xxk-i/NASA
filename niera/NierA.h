@@ -3,12 +3,28 @@
 
 namespace NieR
 {
+	struct CModelWork
+	{
+		void* pVfTable;
+	};
+
+	struct CModelData
+	{
+		byte* pWMB;
+	};
+
+	struct CModelPart
+	{
+		char pad[0x70];
+	};
+
 	// entrity struct
 	struct PlayerModelInfo {
-		BYTE gap0[0x398];
-		void* pWMB;
-		void* mesh_groups;
-		DWORD MaxMeshGroupIndex;
+		BYTE gap0[0x390];
+		struct CModelManager* m_pModelManager;	//0x0000
+		CModelData* m_pModelData;				//0x0008
+		CModelPart* m_pParts;					//0x0010
+		int m_nParts;							//0x0018
 		BYTE gap3AC[524];
 		DWORD currentPlayer;
 		BYTE gap5BC[65644];
@@ -37,11 +53,11 @@ namespace NieR
 	//Known functions
 	typedef __int64(__fastcall* FnManageMeshVisibilities)(__int64 pEntity);
 
-	typedef int(__fastcall* FnSearchMeshGroupIndex)(void* pWMB, const char* mesh_name);
+	typedef int(__fastcall* FnSearchMeshGroupIndex)(CModelData* pModelData, const char* mesh_name);
 
-	typedef __int64(__fastcall* FnSetDrawBasePlayerMeshes)(void* a1, int a2);
+	typedef __int64(__fastcall* FnSetDrawBasePlayerMeshes)(CModelWork* pModelWork, int a2);
 
-	typedef __int64(__fastcall* FnUpdateAccessoryOnUnpause)(PlayerModelInfo* pPlayerModelInfo);
+	typedef __int64(__fastcall* FnUpdateAccessoryOnUnpause)(PlayerModelInfo* pEntity);
 
 	typedef __int64(__fastcall* FnUpdateEquippedActive)(__int64, __int64, int);
 
