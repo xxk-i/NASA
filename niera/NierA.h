@@ -3,6 +3,10 @@
 
 namespace NieR
 {
+	typedef __int32 bool32;
+	typedef float Vector4[4];
+	typedef Vector4 Vector3Aligned;
+	
 	struct CModelWork
 	{
 		void* pVfTable;
@@ -13,9 +17,23 @@ namespace NieR
 		byte* pWMB;
 	};
 
+	struct MaterialShaderInfo;
+	struct WMBBone;
+
 	struct CModelPart
 	{
-		char pad[0x70];
+		Vector4 m_vColor;					//0x0000
+		Vector4 m_vColorReadOnly;			//0x0010
+		Vector3Aligned m_vMax;				//0x0020
+		Vector3Aligned m_vMin;				//0x0030
+		const char* m_szMeshName;			//0x0040 
+		MaterialShaderInfo* m_pShaderInfo;	//0x0048 | important pointer 
+		int m_nShaderInfo;					//0x0050
+		WMBBone* m_pBones;					//0x0058
+		int m_nBones;						//0x0060
+		bool32 m_bShow;						//0x0064 | ? need to be synced with the other modifing threads
+		bool32 m_bUpdate;					//0x0068 | ? fucks with color vec
+		float m_flUnknown6C;				//0x006C
 	};
 
 	// entity struct
