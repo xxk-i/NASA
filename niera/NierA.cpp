@@ -19,7 +19,7 @@ namespace NieR
 	FnValidateNonCharacterSpecificEquippable ValidateNonCharacterSpecificEquippable = NULL;
 	FnSetOutfitFromPause SetOutfitFromPause = NULL;
 	FnSetEquippedFromPause SetEquippedFromPause = NULL;
-	FnLambda Lambda = NULL;
+	FnEntityHandleCopy EntityHandleCopy = NULL;
 
 	//Unknown-function pointers
 	// X - RVA from imagebase
@@ -46,12 +46,12 @@ namespace NieR
 	_sub_7c9cb0 sub_7c9cb0 = NULL;
 
 	//Saved original functions from hooks
-	FnManageMeshVisibilities ManageMeshVisiblities = NULL;
-	FnGetOutfitIDFromItemID GetOutfitIDFromItemID = NULL;
-	FnSetEquippedFromPause SetEquippedFromPause = NULL;
-	FnUpdateAccessoryOnUnpause UpdateAccessoryOnUnpause = NULL;
-	FnUpdateEquippedActive UpdateEquippedActive = NULL;
-	FnValidateDLCArmor ValidateDLCArmor = NULL;
-	FnValidateNonCharacterSpecificEquippable ValidateNonSpecificCharacterEquippable = NULL;
-	FnSetMeshToGroup SetMeshToGroup = NULL;
+	FnManageMeshVisibilities OriginalManageMeshVisibilities = NULL;
+	FnGetOutfitIDFromItemID OriginalGetOutfitIDFromItemID = NULL;
+	FnSetEquippedFromPause OriginalSetEquippedFromPause = NULL;
+	FnUpdateAccessoryOnUnpause OriginalUpdateAccessoryOnUnpause = NULL;
+	FnValidateNonCharacterSpecificEquippable OriginalValidateNonCharacterSpecificEquippable = NULL;
+	FnUpdateEquippedActive OriginalUpdateEquippedActive = NULL;
+	FnValidateDLCArmor OriginalValidateDLCArmor = NULL;
+	FnSetMeshToGroup OriginalSetMeshToGroup = NULL;
 }

@@ -141,7 +141,7 @@ namespace NieR
 
 	typedef void(__fastcall* _sub_52e9e0)(__int64, int);
 	
-	typedef int* (__fastcall* FnLambda)(int*, int*);
+	typedef int* (__fastcall* FnEntityHandleCopy)(int*, int*);
 
 	//Known-function pointers
 	extern FnManageMeshVisibilities ManageMeshVisibilities;
@@ -159,7 +159,8 @@ namespace NieR
 	extern FnValidateNonCharacterSpecificEquippable ValidateNonCharacterSpecificEquippable;
 	extern FnSetOutfitFromPause SetOutfitFromPause;
 	extern FnSetEquippedFromPause SetEquippedFromPause;
-	extern FnLambda Lambda;
+	extern FnEntityHandleCopy EntityHandleCopy;
+	extern FnSetMeshToGroup SetMeshToGroup;
 
 	//Unknown-function pointers
 	extern _sub_52e9e0 sub_52e9e0;
@@ -174,7 +175,6 @@ namespace NieR
 	extern _sub_491400 sub_491400;
 	extern _sub_7463c0 sub_7463c0;
 	extern _sub_3e6b70 sub_3e6b70;
-	extern FnSetMeshToGroup SetMeshToGroup;
 	extern _sub_745c10 sub_745c10;
 	extern _sub_45a8c0 sub_45a8c0;
 	extern _sub_3876a0 sub_3876a0;
@@ -184,12 +184,12 @@ namespace NieR
 	extern _sub_7c9cb0 sub_7c9cb0;
 
 	//Saved original functions from hooks
-	extern FnManageMeshVisibilities ManageMeshVisiblities;
-	extern FnGetOutfitIDFromItemID GetOutfitIDFromItemID;
-	extern FnSetEquippedFromPause SetEquippedFromPause;
-	extern FnUpdateAccessoryOnUnpause UpdateAccessoryOnUnpause;
-	extern FnUpdateEquippedActive UpdateEquippedActive;
-	extern FnValidateDLCArmor ValidateDLCArmor;
-	extern FnValidateNonCharacterSpecificEquippable ValidateNonSpecificCharacterEquippable;
-	extern FnSetMeshToGroup SetMeshToGroup;
+	extern FnManageMeshVisibilities OriginalManageMeshVisibilities;
+	extern FnGetOutfitIDFromItemID OriginalGetOutfitIDFromItemID;
+	extern FnSetEquippedFromPause OriginalSetEquippedFromPause;
+	extern FnUpdateAccessoryOnUnpause OriginalUpdateAccessoryOnUnpause;
+	extern FnValidateNonCharacterSpecificEquippable OriginalValidateNonCharacterSpecificEquippable;
+	extern FnUpdateEquippedActive OriginalUpdateEquippedActive;
+	extern FnValidateDLCArmor OriginalValidateDLCArmor;
+	extern FnSetMeshToGroup OriginalSetMeshToGroup;
 }
