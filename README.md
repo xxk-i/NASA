@@ -8,34 +8,31 @@ This repo adds functionality support to NX items, but does not add the items the
 - Install as a nier-mod-loader plugin: https://github.com/xxk-i/nier-mod-loader/releases
     - (e.g.) data\mods\plugins\NASA.dll
 
-# IMPORTANT
-The head accessories (masks) are currently highest priority, although I don't know when I will do them. Feel free to open issues on this repo but I probably won't be able to get to them. The code in this repo is really just IDA pseudocode copy and paste, nothing too complicated - other devs should be able to pick it up basically immediately.
-
 # Known/Probable issues
 - Certain 9S sequences probably don't look as they should with switch outfits equipped
 - Outfits don't show as ```ACTIVE``` when equipped and cannot be de-equipped
     - Fix by equipping a normal DLC outfit and unequipping
+ Further issues are listed on the Nexus mods page
 
-# Planned updates
+# Next steps
 - Fix ```ACTIVE``` flagging
 - Add support for accessories
 - Add support for pods
 
-# MAYBE updates
-- Allow for dynamically loaded modded outfits and mesh-groups
-
+# Developer note
+I have no current plans on working on this mod anymore. The mod's main functionality is a single game function hook (albeit a large one) that manages mesh visibility states, and all related bugs exist within that. If you would like to contribute to this mod, feel free to contact me on Discord and I can help you get started -- @grojdg
 
 # Thank You
 Thank you to all who have ever joined NieR:Modding discord server and especially the following who have stuck with me throughout this endeavor and made everything possible.
 
+Members of the original switch porting groupchat:
 - Baal Silverwing
-- DevolasRevenge
-- EM4V
+- DevolasRevenge - my main duo (model porting and scripting)
 - inculta
 - Izalith
 - oli
 - Seek
-- Woeful_Wolf
-- ♻️ Martino 🧹
+- Woeful_Wolf - localization tools
+- ♻️ Martino 🧹 - code cleanup
 
 Glory to Mankind
