@@ -192,4 +192,13 @@ namespace NieR
 	extern FnUpdateEquippedActive OriginalUpdateEquippedActive;
 	extern FnValidateDLCArmor OriginalValidateDLCArmor;
 	extern FnSetMeshToGroup OriginalSetMeshToGroup;
+
+	// Enum defs
+	enum PlayerId : int
+	{
+		PID_INVALID = -1,
+		PID_2B      = 0,
+		PID_9S      = 1,
+		PID_A2      = 2
+	};
 }

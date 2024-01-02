@@ -1,7 +1,7 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
+#include <iostream>
 #include "minhook/include/MinHook.h"
 #include "niera/NierA.h"
-#include <iostream>
 
 //Stinky globals :)
 uintptr_t modBase = NULL;
@@ -52,13 +52,15 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 
 	const char* resolvedName = "";
 	// Remember we hook this validate function, so this calls the original, which actually jumps to our hook
-	if (!NieR::OriginalValidateNonCharacterSpecificEquippable(modBase + 0x133b510, item_id) || currentPlayer > 2 || item_id == -1)
+	if (!NieR::OriginalValidateNonCharacterSpecificEquippable(modBase + 0x133b510, item_id) ||
+		currentPlayer > NieR::PlayerId::PID_A2 ||
+		item_id == -1)
 	{
 		return 0;
 	}
 
 	//2B
-	if (currentPlayer == 0)
+	if (currentPlayer == NieR::PlayerId::PID_2B)
 	{
 		resolvedName = NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id);
 		if (strcmp(resolvedName, "item_uq_changeArmour1") &&
@@ -72,7 +74,7 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 	}
 
 	//9S
-	else if (currentPlayer == 1)
+	else if (currentPlayer == NieR::PlayerId::PID_9S)
 	{
 		resolvedName = NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id);
 		if (strcmp(resolvedName, "item_uq_dlcCloth2") &&
@@ -84,7 +86,7 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 	}
 
 	//A2
-	else if (currentPlayer == 2)
+	else if (currentPlayer == NieR::PlayerId::PID_A2)
 	{
 		resolvedName = NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id);
 		if (strcmp(resolvedName, "item_uq_dlcCloth3") &&
@@ -123,11 +125,15 @@ __int64 hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer
 	const char* resolved_name = "";
 	const char* expected_name = "";
 
-	if (item_id == -1 || currentPlayer <= -1 || currentPlayer > 2)
+	if (item_id == -1 ||
+		currentPlayer <= NieR::PlayerId::PID_INVALID ||
+		currentPlayer > NieR::PlayerId::PID_A2)
+	{
 		return 0i64;
+	}
 
 	//2B
-	if (currentPlayer == 0)
+	if (currentPlayer == NieR::PlayerId::PID_2B)
 	{
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
 		if (!strcmp(resolved_name, "item_uq_changeArmour1"))
@@ -147,7 +153,7 @@ __int64 hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer
 	}
 
 	//9S
-	else if (currentPlayer == 1)
+	else if (currentPlayer == NieR::PlayerId::PID_9S)
 	{
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
 		if (!strcmp(resolved_name, "item_uq_dlcOutfit3"))	//9P
@@ -161,7 +167,7 @@ __int64 hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer
 	}
 
 	//A2
-	else if (currentPlayer == 2)
+	else if (currentPlayer == NieR::PlayerId::PID_A2)
 	{
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
 		if (!strcmp(resolved_name, "item_uq_dlcOutfit5"))	//P2
@@ -717,7 +723,8 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 
 
 	//A2
-	if (((pPlayerModelInfo->currentPlayer) != 0x10000 || ((pPlayerModelInfo->currentPlayer) == 0x10000 && (pPlayerModelInfo->dwordisDestructed) == 0)))
+	if (pPlayerModelInfo->currentPlayer != 0x10000 ||
+		(pPlayerModelInfo->currentPlayer == 0x10000 && pPlayerModelInfo->dwordisDestructed == 0))
 	{
 		const char* extra = "";
 		if ((pPlayerModelInfo->currentPlayer) - 0x10100 <= 1)
