@@ -201,4 +201,38 @@ namespace NieR
 		PID_9S      = 1,
 		PID_A2      = 2
 	};
+
+	enum ItemId : int
+	{
+		ITEM_INVALID   = -1,
+		ITEM_2P_BODY   = 81,
+		ITEM_2B_KIMONO = 82,
+		ITEM_9P_BODY   = 83,
+		ITEM_9S_KIMONO = 84,
+		ITEM_P2_BODY   = 85,
+		ITEM_A2_KIMONO = 86
+	};
+
+	enum OutfitId : int
+	{
+		// 2B Outfits
+		OUTFIT_2B_NORMAL  = 0,
+		OUTFIT_2B_KAINE   = 1,
+		OUTFIT_2B_ARMOR_A = 2,
+		OUTFIT_2B_ARMOR_B = 3,
+		OUTFIT_2B_2P_BODY = 4,
+		OUTFIT_2B_KIMONO  = 5,
+
+		// 9S Outfits
+		OUTFIT_9S_NORMAL    = 0,
+		OUTFIT_9S_YOUNG_MAN = 1,
+		OUTFIT_9S_9P_BODY   = 2,
+		OUTFIT_9S_KIMONO    = 3,
+
+		// A2 Outfits
+		OUTFIT_A2_NORMAL    = 0,
+		OUTFIT_A2_DESTROYER = 1,
+		OUTFIT_A2_KIMONO    = 2,
+		OUTFIT_A2_P2_BODY   = 3
+	};
 }
