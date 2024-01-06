@@ -514,7 +514,9 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 	{
 		NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)&pPlayerModelInfo->gap0[0x390], 1);
 		__int64 thing = (__int64)pPlayerModelInfo;
-		if (pPlayerModelInfo->outfitEquipped == 1) //kaine outfit
+		
+		//kaine outfit
+		if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_2B_KAINE)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Body");
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Head");
@@ -537,15 +539,15 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			SetMeshInvisible(pPlayerModelInfo, "Feather");
 			SetMeshInvisible(pPlayerModelInfo, "Skirt");
 		}
-
-		else if (pPlayerModelInfo->outfitEquipped == 2) //full armor
+		//full armor
+		else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_2B_ARMOR_A)
 		{
 			NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)&pPlayerModelInfo->gap0[0x390], 0);
 			SetMeshVisible(pPlayerModelInfo, "Armor_Body");
 			SetMeshVisible(pPlayerModelInfo, "Armor_Head");
 		}
-
-		else if (pPlayerModelInfo->outfitEquipped == 3)	//just armor body
+		//just armor body
+		else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_2B_ARMOR_B)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Head");
 			SetMeshInvisible(pPlayerModelInfo, "DLC_Body");
@@ -570,8 +572,8 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			SetMeshInvisible(pPlayerModelInfo, "NS_2P_Skirt");
 			v15 = "Broken";
 		}
-
-		else if (pPlayerModelInfo->outfitEquipped == 4)	//2P
+		//2P
+		else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_2B_2P_BODY)
 		{
 			// We could do this nicely and do activations instead of deactivations but it doesn't play as nice with the other code
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Body");
@@ -590,8 +592,8 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			SetMeshInvisible(pPlayerModelInfo, "Feather");
 			SetMeshInvisible(pPlayerModelInfo, "Skirt");
 		}
-
-		else if (pPlayerModelInfo->outfitEquipped == 5) //Kimono
+		//Kimono
+		else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_2B_KIMONO)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Body");
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Head");
@@ -611,8 +613,8 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			SetMeshInvisible(pPlayerModelInfo, "Feather");
 			SetMeshInvisible(pPlayerModelInfo, "Skirt");
 		}
-
-		else  // normal
+		//Normal
+		else
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Body");
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Head");
@@ -753,7 +755,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		{
 			NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)(&pPlayerModelInfo->gap0[0x390]), 1);
 			// Destroyer Outfit
-			if ((pPlayerModelInfo->outfitEquipped) == 1)
+			if ((pPlayerModelInfo->outfitEquipped) == NieR::OutfitId::OUTFIT_A2_DESTROYER)
 			{
 				SetMeshInvisible(pPlayerModelInfo, "Body");
 				SetMeshInvisible(pPlayerModelInfo, "Cloth");
@@ -767,7 +769,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			}
 
 			// YoRHA Uniform Prototype
-			else if (pPlayerModelInfo->outfitEquipped == 2)
+			else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_A2_KIMONO)
 			{
 				SetMeshInvisible(pPlayerModelInfo, "Body");
 				SetMeshInvisible(pPlayerModelInfo, "Cloth");
@@ -781,7 +783,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			}
 
 			// P2's Body Replica
-			else if (pPlayerModelInfo->outfitEquipped == 3)
+			else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_A2_P2_BODY)
 			{
 				SetMeshInvisible(pPlayerModelInfo, "Body");
 				SetMeshInvisible(pPlayerModelInfo, "Cloth");
@@ -868,7 +870,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)(&pPlayerModelInfo->gap0[0x390]), 1);
 
 		//Normal
-		if (pPlayerModelInfo->outfitEquipped == 0)
+		if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_9S_NORMAL)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "DLC_Pants");
 			SetMeshInvisible(pPlayerModelInfo, "DLC_Body");
@@ -901,7 +903,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		}
 
 		//Young Man Outfit
-		if (pPlayerModelInfo->outfitEquipped == 1)
+		if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_9S_YOUNG_MAN)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Pants");
 			SetMeshInvisible(pPlayerModelInfo, "Body");
@@ -934,7 +936,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		}
 
 		//9P (White 9S)
-		if (pPlayerModelInfo->outfitEquipped == 2)
+		if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_9S_9P_BODY)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Pants");
 			SetMeshInvisible(pPlayerModelInfo, "Body");
@@ -965,7 +967,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		}
 
 		//Kimono
-		else if (pPlayerModelInfo->outfitEquipped == 3)
+		else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_9S_KIMONO)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Pants");
 			SetMeshInvisible(pPlayerModelInfo, "Body");
