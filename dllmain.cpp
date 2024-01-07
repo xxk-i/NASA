@@ -57,6 +57,7 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 	//std::cout << "ItemID: " << item_id << " ResolvedName: " << NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id) << "\n";
 
 	const char* resolvedName = "";
+	// Remember we hook this validate function, so this function pointer jumps to our hook
 	if (!NieR::ValidateNonCharacterSpecificEquippable(modBase + 0x133b510, item_id) ||
 		currentPlayer > NieR::PlayerId::PID_A2 ||
 		item_id == -1)
