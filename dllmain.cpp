@@ -30,17 +30,17 @@ __int64 hkGetOutfitIDFromItemID(__int64 item_base, int item_ID)
 	switch (item_ID)
 	{
 	case NieR::ItemId::ITEM_2P_BODY:    //2P
-		return 5;
+		return NieR::OutfitId::OUTFIT_2B_2P_BODY;
 	case NieR::ItemId::ITEM_2B_KIMONO:  //2B Kimono
-		return 6;
+		return NieR::OutfitId::OUTFIT_2B_KIMONO;
 	case NieR::ItemId::ITEM_9P_BODY:    //9P
-		return 3;
+		return NieR::OutfitId::OUTFIT_9S_9P_BODY;
 	case NieR::ItemId::ITEM_9S_KIMONO:  //9S Kimono
-		return 4;
+		return NieR::OutfitId::OUTFIT_9S_KIMONO;
 	case NieR::ItemId::ITEM_P2_BODY:    //P2
-		return 7;
+		return NieR::OutfitId::OUTFIT_A2_P2_BODY;
 	case NieR::ItemId::ITEM_A2_KIMONO:  //A2 Kimono
-		return 8;
+		return NieR::OutfitId::OUTFIT_A2_KIMONO;
 	}
 
 	return NieR::GetOutfitIDFromItemID(item_base, item_ID);
@@ -112,9 +112,9 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 
 		/// @note NOTE: Since GetOutfitIDFromItemID() returns unexpected outfit IDs for the Switch DLC outfits
 		/// we need to manually return the expected outfit IDs based on item ID for the new Switch DLC outfits
-		/// and call the original function for every other outfit. We avoid hooking GetOutfitIDFromItemID()
-		/// because there may be some additional logic that is performed in the original function that could
-		/// cause the new Switch DLC outfits to fail the outfit validation at the top of this function.
+		/// and call the original function for every other outfit. I'm choosing not to hook GetOutfitIDFromItemID()
+		/// because the original function could potentially be used somewhere else in the executable where it expects
+		/// the strange outfit IDs.
 		int outfitId = (item_id == NieR::ItemId::ITEM_2P_BODY)   ? NieR::OutfitId::OUTFIT_2B_2P_BODY :
 					   (item_id == NieR::ItemId::ITEM_2B_KIMONO) ? NieR::OutfitId::OUTFIT_2B_KIMONO :
 					   (item_id == NieR::ItemId::ITEM_9P_BODY)   ? NieR::OutfitId::OUTFIT_9S_9P_BODY :
@@ -372,16 +372,16 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 4)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_2B_2P_BODY)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 4, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_2P_BODY, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
@@ -395,16 +395,16 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 5)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_2B_KIMONO)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 5, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_KIMONO, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
@@ -418,16 +418,16 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 2)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_9S_9P_BODY)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 2, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_9P_BODY, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
@@ -441,16 +441,16 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 3)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_9S_KIMONO)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 3, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_KIMONO, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
@@ -464,16 +464,16 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 3)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_A2_P2_BODY)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 3, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_P2_BODY, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
@@ -487,16 +487,16 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 2)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_A2_KIMONO)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 2, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_KIMONO, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
@@ -833,7 +833,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			}
 
 
-			if ((pPlayerModelInfo->outfitEquipped) != 1)
+			if ((pPlayerModelInfo->outfitEquipped) != NieR::OutfitId::OUTFIT_A2_DESTROYER)
 			{
 				if ((pPlayerModelInfo->dwordShowPants) == 0)
 				{
@@ -843,7 +843,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 					SetMeshInvisible(pPlayerModelInfo, "NS_P2_Cloth");
 				}
 
-				if (pPlayerModelInfo->outfitEquipped == 2)
+				if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_A2_KIMONO)
 				{
 					SetMeshVisible(pPlayerModelInfo, "NS_KIMONO_Broken");
 				}
