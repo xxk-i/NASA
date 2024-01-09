@@ -1,7 +1,8 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
+#include <iostream>
+#include <fstream>
 #include "minhook/include/MinHook.h"
 #include "niera/NierA.h"
-#include <iostream>
 
 //Stinky globals :)
 uintptr_t modBase = NULL;
@@ -21,20 +22,25 @@ __int64* lambda_meme(__int64* a1, int* a2)
 	return a1;
 }
 
-//TODO maybe look at this? try to avoid resolving name?
+//Unused since the outfit ID returned by the original function
+//may be used somewhere else in the executable which results in failed outfit validation checks.
 __int64 hkGetOutfitIDFromItemID(__int64 item_base, int item_ID)
 {
 	//Original function does some goofy shit IDK my way or the highway bitch
 	switch (item_ID)
 	{
-	case 81:	//2P
-		return 5;
-	case 82:	//2B Kimono
-		return 6;
-	case 85:	//P2
-		return 7;
-	case 86:	//A2 Kimono
-		return 8;
+	case NieR::ItemId::ITEM_2P_BODY:    //2P
+		return NieR::OutfitId::OUTFIT_2B_2P_BODY;
+	case NieR::ItemId::ITEM_2B_KIMONO:  //2B Kimono
+		return NieR::OutfitId::OUTFIT_2B_KIMONO;
+	case NieR::ItemId::ITEM_9P_BODY:    //9P
+		return NieR::OutfitId::OUTFIT_9S_9P_BODY;
+	case NieR::ItemId::ITEM_9S_KIMONO:  //9S Kimono
+		return NieR::OutfitId::OUTFIT_9S_KIMONO;
+	case NieR::ItemId::ITEM_P2_BODY:    //P2
+		return NieR::OutfitId::OUTFIT_A2_P2_BODY;
+	case NieR::ItemId::ITEM_A2_KIMONO:  //A2 Kimono
+		return NieR::OutfitId::OUTFIT_A2_KIMONO;
 	}
 
 	return NieR::GetOutfitIDFromItemID(item_base, item_ID);
@@ -48,17 +54,22 @@ This is my refactored version
 */
 __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 {
-	//std::cout << "ItemID: " << item_id << " ResolvedName: " << NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id) << std::endl;
+	//std::cout << "ItemID: " << item_id << " ResolvedName: " << NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id) << "\n";
 
 	const char* resolvedName = "";
-	// Remember we hook this validate function, so this calls the original, which actually jumps to our hook
-	if (!NieR::OriginalValidateNonCharacterSpecificEquippable(modBase + 0x133b510, item_id) || currentPlayer > 2 || item_id == -1)
+	// Remember we hook this validate function, so this function pointer jumps to our hook
+	if (!NieR::ValidateNonCharacterSpecificEquippable(modBase + 0x133b510, item_id) ||
+		currentPlayer > NieR::PlayerId::PID_A2 ||
+		item_id == -1)
 	{
+		//std::cout << "Failed equippable outfit validation, valid=" << NieR::ValidateNonCharacterSpecificEquippable(modBase + 0x133b510, item_id)
+		//		  << ", itemId=" << item_id
+		//		  << ", currentPlayer=" << currentPlayer << "\n";
 		return 0;
 	}
 
 	//2B
-	if (currentPlayer == 0)
+	if (currentPlayer == NieR::PlayerId::PID_2B)
 	{
 		resolvedName = NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id);
 		if (strcmp(resolvedName, "item_uq_changeArmour1") &&
@@ -72,7 +83,7 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 	}
 
 	//9S
-	else if (currentPlayer == 1)
+	else if (currentPlayer == NieR::PlayerId::PID_9S)
 	{
 		resolvedName = NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id);
 		if (strcmp(resolvedName, "item_uq_dlcCloth2") &&
@@ -84,7 +95,7 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 	}
 
 	//A2
-	else if (currentPlayer == 2)
+	else if (currentPlayer == NieR::PlayerId::PID_A2)
 	{
 		resolvedName = NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id);
 		if (strcmp(resolvedName, "item_uq_dlcCloth3") &&
@@ -97,16 +108,27 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 
 	if (NieR::sub_7c4b50() != 0)
 	{
-		//Same reminder, we are hooking GetOutfitIDFromItemID
 		//If this returns true, the outfit shows as ACTIVE
-		/*
-		if (NieR::GetPlayerFromPlayerNum(currentPlayer))
-		{
-			//std::cout << "Outfit_ID: " << NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) << " OutFitEquipped: " << ((NieR::PlayerModelInfo*)NieR::GetPlayerFromPlayerNum(currentPlayer))->outfitEquipped << std::endl;
-			return NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) == ((NieR::PlayerModelInfo*)NieR::GetPlayerFromPlayerNum(currentPlayer))->outfitEquipped;
-		}
-		*/
-		return NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) == *(int*)((modBase + 0x1494354) + (sizeof(int) * currentPlayer));
+
+		/// @note NOTE: Since GetOutfitIDFromItemID() returns unexpected outfit IDs for the Switch DLC outfits
+		/// we need to manually return the expected outfit IDs based on item ID for the new Switch DLC outfits
+		/// and call the original function for every other outfit. I'm choosing not to hook GetOutfitIDFromItemID()
+		/// because the original function could potentially be used somewhere else in the executable where it expects
+		/// the strange outfit IDs.
+		int outfitId = (item_id == NieR::ItemId::ITEM_2P_BODY)   ? NieR::OutfitId::OUTFIT_2B_2P_BODY :
+					   (item_id == NieR::ItemId::ITEM_2B_KIMONO) ? NieR::OutfitId::OUTFIT_2B_KIMONO :
+					   (item_id == NieR::ItemId::ITEM_9P_BODY)   ? NieR::OutfitId::OUTFIT_9S_9P_BODY :
+					   (item_id == NieR::ItemId::ITEM_9S_KIMONO) ? NieR::OutfitId::OUTFIT_9S_KIMONO :
+					   (item_id == NieR::ItemId::ITEM_P2_BODY)   ? NieR::OutfitId::OUTFIT_A2_P2_BODY :
+					   (item_id == NieR::ItemId::ITEM_A2_KIMONO) ? NieR::OutfitId::OUTFIT_A2_KIMONO :
+					   NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id);
+		int* activePlayerOutfits = (int*)(modBase + 0x1494354);
+
+		//std::cout << "Outfit_ID: " << NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) << "\n";
+		//std::cout << "OutFitEquipped: " << ((NieR::PlayerModelInfo*)NieR::GetPlayerFromPlayerNum(currentPlayer))->outfitEquipped << "\n";
+		//std::cout << "ActiveOutfitId: " << activePlayerOutfits[currentPlayer] << "\n";
+
+		return (outfitId == activePlayerOutfits[currentPlayer]);
 	}
 
 	return 0;
@@ -123,11 +145,15 @@ __int64 hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer
 	const char* resolved_name = "";
 	const char* expected_name = "";
 
-	if (item_id == -1 || currentPlayer <= -1 || currentPlayer > 2)
+	if (item_id == -1 ||
+		currentPlayer <= NieR::PlayerId::PID_INVALID ||
+		currentPlayer > NieR::PlayerId::PID_A2)
+	{
 		return 0i64;
+	}
 
 	//2B
-	if (currentPlayer == 0)
+	if (currentPlayer == NieR::PlayerId::PID_2B)
 	{
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
 		if (!strcmp(resolved_name, "item_uq_changeArmour1"))
@@ -147,7 +173,7 @@ __int64 hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer
 	}
 
 	//9S
-	else if (currentPlayer == 1)
+	else if (currentPlayer == NieR::PlayerId::PID_9S)
 	{
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
 		if (!strcmp(resolved_name, "item_uq_dlcOutfit3"))	//9P
@@ -161,7 +187,7 @@ __int64 hkValidateDLCArmor(__int64 item_base, __int64 item_id, int currentPlayer
 	}
 
 	//A2
-	else if (currentPlayer == 2)
+	else if (currentPlayer == NieR::PlayerId::PID_A2)
 	{
 		resolved_name = (const char*)NieR::ResolveNameFromItemID(item_base, item_id);
 		if (!strcmp(resolved_name, "item_uq_dlcOutfit5"))	//P2
@@ -185,12 +211,14 @@ __int64 hkValidateNonSpecificCharacterEquippable(__int64 item_base, int item_id)
 	{
 		const char* szName = NieR::ResolveNameFromItemID(item_base, item_id);
 
+		// Base game outfits
 		if (!strcmp(szName, "item_uq_changeArmour1"))
 			return true;
 
 		if (!strcmp(szName, "item_uq_changeArmour2"))
 			return true;
 
+		// NieR Replicant DLC outfits
 		if (!strcmp(szName, "item_uq_dlcCloth1"))
 			return true;
 
@@ -200,6 +228,7 @@ __int64 hkValidateNonSpecificCharacterEquippable(__int64 item_base, int item_id)
 		if (!strcmp(szName, "item_uq_dlcCloth3"))
 			return true;
 
+		// Switch DLC outfit additions
 		if (!strcmp(szName, "item_uq_dlcOutfit1"))
 			return true;
 
@@ -336,138 +365,138 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	}
 
 	//2P's Body Replica (White)
-	if (item_id == 81)
+	if (item_id == NieR::ItemId::ITEM_2P_BODY)
 	{
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 4)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_2B_2P_BODY)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 4, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_2P_BODY, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 	}
 
 	//Yorha Uniform 1 (Kimono)
-	if (item_id == 82)
+	if (item_id == NieR::ItemId::ITEM_2B_KIMONO)
 	{
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 5)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_2B_KIMONO)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 5, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_KIMONO, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 	}
 
 	//9P (White 9S)
-	if (item_id == 83)
+	if (item_id == NieR::ItemId::ITEM_9P_BODY)
 	{
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 2)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_9S_9P_BODY)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 2, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_9P_BODY, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 	}
 
 	//9S Kimono
-	if (item_id == 84)
+	if (item_id == NieR::ItemId::ITEM_9S_KIMONO)
 	{
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 3)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_9S_KIMONO)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 3, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_KIMONO, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 	}
 
 	//P2's Body Replica
-	if (item_id == 85)
+	if (item_id == NieR::ItemId::ITEM_P2_BODY)
 	{
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 3)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_A2_P2_BODY)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 3, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_P2_BODY, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 	}
 
 	//YoRHA Uniform Prototype (NS_A2)
-	if (item_id == 86)
+	if (item_id == NieR::ItemId::ITEM_A2_KIMONO)
 	{
 		int playernum = *(DWORD*)(modBase + 0x125025c);
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
 		//Workaround
-		if (v9->outfitEquipped == 2)
+		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_A2_KIMONO)
 		{
-			NieR::SetOutfitFromPause(v9, 0, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_NORMAL, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
-			NieR::SetOutfitFromPause(v9, 2, 1);
+			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_KIMONO, 1);
 			*(int*)(modBase + 0x13fd4ac) = 1;
 			return 1;
 		}
@@ -486,7 +515,9 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 	{
 		NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)&pPlayerModelInfo->gap0[0x390], 1);
 		__int64 thing = (__int64)pPlayerModelInfo;
-		if (pPlayerModelInfo->outfitEquipped == 1) //kaine outfit
+		
+		//kaine outfit
+		if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_2B_KAINE)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Body");
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Head");
@@ -509,15 +540,15 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			SetMeshInvisible(pPlayerModelInfo, "Feather");
 			SetMeshInvisible(pPlayerModelInfo, "Skirt");
 		}
-
-		else if (pPlayerModelInfo->outfitEquipped == 2) //full armor
+		//full armor
+		else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_2B_ARMOR_A)
 		{
 			NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)&pPlayerModelInfo->gap0[0x390], 0);
 			SetMeshVisible(pPlayerModelInfo, "Armor_Body");
 			SetMeshVisible(pPlayerModelInfo, "Armor_Head");
 		}
-
-		else if (pPlayerModelInfo->outfitEquipped == 3)	//just armor body
+		//just armor body
+		else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_2B_ARMOR_B)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Head");
 			SetMeshInvisible(pPlayerModelInfo, "DLC_Body");
@@ -542,8 +573,8 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			SetMeshInvisible(pPlayerModelInfo, "NS_2P_Skirt");
 			v15 = "Broken";
 		}
-
-		else if (pPlayerModelInfo->outfitEquipped == 4)	//2P
+		//2P
+		else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_2B_2P_BODY)
 		{
 			// We could do this nicely and do activations instead of deactivations but it doesn't play as nice with the other code
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Body");
@@ -562,8 +593,8 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			SetMeshInvisible(pPlayerModelInfo, "Feather");
 			SetMeshInvisible(pPlayerModelInfo, "Skirt");
 		}
-
-		else if (pPlayerModelInfo->outfitEquipped == 5) //Kimono
+		//Kimono
+		else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_2B_KIMONO)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Body");
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Head");
@@ -583,8 +614,8 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			SetMeshInvisible(pPlayerModelInfo, "Feather");
 			SetMeshInvisible(pPlayerModelInfo, "Skirt");
 		}
-
-		else  // normal
+		//Normal
+		else
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Body");
 			SetMeshInvisible(pPlayerModelInfo, "Armor_Head");
@@ -717,14 +748,15 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 
 
 	//A2
-	if (((pPlayerModelInfo->currentPlayer) != 0x10000 || ((pPlayerModelInfo->currentPlayer) == 0x10000 && (pPlayerModelInfo->dwordisDestructed) == 0)))
+	if (pPlayerModelInfo->currentPlayer != 0x10000 ||
+		(pPlayerModelInfo->currentPlayer == 0x10000 && pPlayerModelInfo->dwordisDestructed == 0))
 	{
 		const char* extra = "";
 		if ((pPlayerModelInfo->currentPlayer) - 0x10100 <= 1)
 		{
 			NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)(&pPlayerModelInfo->gap0[0x390]), 1);
 			// Destroyer Outfit
-			if ((pPlayerModelInfo->outfitEquipped) == 1)
+			if ((pPlayerModelInfo->outfitEquipped) == NieR::OutfitId::OUTFIT_A2_DESTROYER)
 			{
 				SetMeshInvisible(pPlayerModelInfo, "Body");
 				SetMeshInvisible(pPlayerModelInfo, "Cloth");
@@ -738,7 +770,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			}
 
 			// YoRHA Uniform Prototype
-			else if (pPlayerModelInfo->outfitEquipped == 2)
+			else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_A2_KIMONO)
 			{
 				SetMeshInvisible(pPlayerModelInfo, "Body");
 				SetMeshInvisible(pPlayerModelInfo, "Cloth");
@@ -752,7 +784,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			}
 
 			// P2's Body Replica
-			else if (pPlayerModelInfo->outfitEquipped == 3)
+			else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_A2_P2_BODY)
 			{
 				SetMeshInvisible(pPlayerModelInfo, "Body");
 				SetMeshInvisible(pPlayerModelInfo, "Cloth");
@@ -801,7 +833,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			}
 
 
-			if ((pPlayerModelInfo->outfitEquipped) != 1)
+			if ((pPlayerModelInfo->outfitEquipped) != NieR::OutfitId::OUTFIT_A2_DESTROYER)
 			{
 				if ((pPlayerModelInfo->dwordShowPants) == 0)
 				{
@@ -811,7 +843,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 					SetMeshInvisible(pPlayerModelInfo, "NS_P2_Cloth");
 				}
 
-				if (pPlayerModelInfo->outfitEquipped == 2)
+				if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_A2_KIMONO)
 				{
 					SetMeshVisible(pPlayerModelInfo, "NS_KIMONO_Broken");
 				}
@@ -839,7 +871,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)(&pPlayerModelInfo->gap0[0x390]), 1);
 
 		//Normal
-		if (pPlayerModelInfo->outfitEquipped == 0)
+		if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_9S_NORMAL)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "DLC_Pants");
 			SetMeshInvisible(pPlayerModelInfo, "DLC_Body");
@@ -872,7 +904,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		}
 
 		//Young Man Outfit
-		if (pPlayerModelInfo->outfitEquipped == 1)
+		if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_9S_YOUNG_MAN)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Pants");
 			SetMeshInvisible(pPlayerModelInfo, "Body");
@@ -905,7 +937,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		}
 
 		//9P (White 9S)
-		if (pPlayerModelInfo->outfitEquipped == 2)
+		if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_9S_9P_BODY)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Pants");
 			SetMeshInvisible(pPlayerModelInfo, "Body");
@@ -936,7 +968,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		}
 
 		//Kimono
-		else if (pPlayerModelInfo->outfitEquipped == 3)
+		else if (pPlayerModelInfo->outfitEquipped == NieR::OutfitId::OUTFIT_9S_KIMONO)
 		{
 			SetMeshInvisible(pPlayerModelInfo, "Pants");
 			SetMeshInvisible(pPlayerModelInfo, "Body");
@@ -1322,7 +1354,7 @@ void InitializeFunctionPointers()
 	NieR::SetDrawBasePlayerMeshes = (NieR::FnSetDrawBasePlayerMeshes)(modBase + 0x197C70);
 	NieR::EntityHandleCopy = (NieR::FnEntityHandleCopy)(modBase + 0x744fa0);
 }
-#include <fstream>
+
 void ConsoleSetup()
 {
 	//AllocConsole();
@@ -1331,7 +1363,7 @@ void ConsoleSetup()
 
 	freopen_s(&stream, "log.txt", "w", stdout);
 	freopen_s(&stream, "log.txt", "w", stderr);
-	freopen_s(&stream, "log.txt", "w", stdin);
+	freopen_s(&stream, "log.txt", "r", stdin);
 }
 
 int Main(PVOID lpParameter)
