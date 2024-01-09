@@ -708,9 +708,10 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		}
 		else
 		{
-			NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)(&pPlayerModelInfo->gap0[0x390]), 1);
+			// This section is entered when playing as 2B during chapter 11
 			if ((pPlayerModelInfo->dword178E0) == 0)
 			{
+				NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)(&pPlayerModelInfo->gap0[0x390]), 1);
 				SetMeshInvisible(pPlayerModelInfo, "Armor_Head");
 				SetMeshInvisible(pPlayerModelInfo, "DLC_Body");
 				SetMeshInvisible(pPlayerModelInfo, "DLC_Skirt");
@@ -736,7 +737,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 			}
 			else
 			{
-				NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)(&pPlayerModelInfo->gap0[0x390]), 1);
+				NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)(&pPlayerModelInfo->gap0[0x390]), 0);
 				SetMeshVisible(pPlayerModelInfo, "Armor_Body");
 				SetMeshVisible(pPlayerModelInfo, "Armor_Head");
 			}
