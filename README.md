@@ -15,7 +15,7 @@ This repo adds functionality support to NX items, but does not add the items the
  Further issues are listed on the Nexus mods page
 
 # Next steps
-- Fix ```ACTIVE``` flagging
+~~- Fix ```ACTIVE``` flagging~~
 - Add support for accessories
 - Add support for pods
 
