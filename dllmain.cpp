@@ -6,6 +6,134 @@
 
 //Stinky globals :)
 uintptr_t modBase = NULL;
+
+// NieR:Automata builds NASA knows. The code is written with v1.02 RVAs, and GameAddress()
+// translates each one for the running build. Steam build 26534214 (November 2026) moved every
+// function and global, and hooking the v1.02 addresses there patched the middle of unrelated
+// code - Item_IsArmourForAndroid's v1.02 RVA is inside MapMeshIsLowMapExcluded on the new
+// build, which crashed the game's worker threads.
+enum GameBuild
+{
+	BUILD_UNKNOWN = -1,
+	BUILD_V102,
+	BUILD_26534214,
+	BUILD_COUNT
+};
+
+static GameBuild g_Build = BUILD_UNKNOWN;
+
+struct GameRva
+{
+	uintptr_t m_uRva[BUILD_COUNT];
+};
+
+// v1.02 -> build 26534214, from the old->new address map of the two builds' IDA databases
+static const GameRva s_GameRvas[] =
+{
+	{ { 0x0150B70, 0x0150C60 } },	// CSceneEntitySystem::RemoveNode
+	{ { 0x0150D80, 0x0150E70 } },	// CSceneStateSystem::Insert
+	{ { 0x01910B0, 0x01911A0 } },	// CModelData::GetPartIndex
+	{ { 0x0197C70, 0x0197D60 } },	// CModelWork_SetAllMeshVisibility
+	{ { 0x028ED30, 0x028EE30 } },	// HashStringCRC32
+	{ { 0x03084C0, 0x03085C0 } },	// CEntityInfo::GetPl0000
+	{ { 0x03876A0, 0x03877A0 } },	// GetEntityFromHandle2
+	{ { 0x03E6B70, 0x03E6C70 } },	// EntityHandle::Invalidate
+	{ { 0x045A850, 0x045A950 } },	// CEntityInfo_GetEmParts
+	{ { 0x045A8C0, 0x045A9C0 } },	// sub_14045A8C0
+	{ { 0x0475EB0, 0x0475FB0 } },	// Pl0000_SetCostume
+	{ { 0x0482360, 0x0482460 } },	// Pl0000_UpdateFaceMask
+	{ { 0x0491170, 0x0491270 } },	// EntityHandle_GetBehaviorOfTypeC
+	{ { 0x0491400, 0x0491500 } },	// EntityHandle_GetUNKNOWN_831C75F8
+	{ { 0x0495970, 0x0495A70 } },	// DynamicArray::Find
+	{ { 0x04ECA60, 0x04ECB60 } },	// Pl0000_SetSharedModeState
+	{ { 0x051B940, 0x051BA40 } },	// Pl0000_UpdatePartVisibility
+	{ { 0x052E9E0, 0x052EAE0 } },	// Pl0000_SetHairColour
+	{ { 0x0744FA0, 0x07450A0 } },	// EntityHandle::Copy
+	{ { 0x07459B0, 0x0745C80 } },	// CSceneEntitySystem::SpawnEntity
+	{ { 0x0745C10, 0x0745EE0 } },	// CModel::GetParent
+	{ { 0x0745C50, 0x0745F20 } },	// GetEntityInfoFromHandle
+	{ { 0x07463C0, 0x0746690 } },	// CEntityInfo_Delete
+	{ { 0x07C4B50, 0x07C4F50 } },	// GetLocalPlayer
+	{ { 0x07C4B90, 0x07C4F90 } },	// Player_GetLocalAndroidKind
+	{ { 0x07C9CB0, 0x07CA0B0 } },	// CItemManager::AddItem
+	{ { 0x07D42A0, 0x07D46A0 } },	// Item_GetClothStyle
+	{ { 0x07D4310, 0x07D4710 } },	// Item_GetHeaddressStyle
+	{ { 0x07E35C0, 0x07E39E0 } },	// CItemManager::GetItemNameById
+	{ { 0x07E6E60, 0x07E7280 } },	// ItemDataManager_GetUseInfo
+	{ { 0x07F4020, 0x07F4440 } },	// Item_IsArmourOrDlcCloth
+	{ { 0x07F4770, 0x07F4B90 } },	// Item_IsArmourForAndroid
+	{ { 0x07F4830, 0x07F4C50 } },	// Item_IsHairItemForAndroid
+	{ { 0x07F50F0, 0x07F5510 } },	// ItemManager_IsClothWorn
+	{ { 0x07F6D90, 0x07F71B0 } },	// Item_IsPodSkin
+	{ { 0x0843EE0, 0x0844300 } },	// CItemManager::UseItemById
+	{ { 0x0F8C220, 0x0F8C4E0 } },	// g_pSceneStateSystem_Scenes
+	{ { 0x0FC2370, 0x0FC2680 } },	// g_pSceneStateSystem
+	{ { 0x1029558, 0x1029898 } },	// global, resolved through its code references
+	{ { 0x10297F0, 0x1029B30 } },	// global, resolved through its code references
+	{ { 0x125025C, 0x12505DC } },	// g_hLocalPlayer
+	{ { 0x133B510, 0x133B890 } },	// g_ItemManager
+	{ { 0x13FD4AC, 0x13FD834 } },	// dword_1413FD4AC
+	{ { 0x1494354, 0x14946C4 } },	// global, resolved through its code references
+};
+
+// The prologue of every hooked function, the same bytes in both builds. A build counts as
+// detected only if all of them are where that build's RVAs say, so an unknown build is never
+// hooked.
+struct HookProbe
+{
+	uintptr_t m_uRva[BUILD_COUNT];
+	BYTE m_Prologue[16];
+	size_t m_cbPrologue;
+};
+
+static const HookProbe s_HookProbes[] =
+{
+	// ManageMeshVisibilities
+	{ { 0x51B940, 0x51BA40 }, { 0x40, 0x57, 0x48, 0x83, 0xEC, 0x50, 0x48, 0xC7, 0x44, 0x24, 0x30, 0xFE, 0xFF, 0xFF, 0xFF, 0x48 }, 16 },
+	// UpdateEquippedActive (bytes 13+ are a rel32 that differs)
+	{ { 0x7F50F0, 0x7F5510 }, { 0x48, 0x89, 0x5C, 0x24, 0x08, 0x57, 0x48, 0x83, 0xEC, 0x20, 0x48, 0x8D, 0x0D }, 13 },
+	// ValidateDLCArmor
+	{ { 0x7F4770, 0x7F4B90 }, { 0x48, 0x89, 0x5C, 0x24, 0x08, 0x57, 0x48, 0x83, 0xEC, 0x20, 0x8B, 0xDA, 0x48, 0x8B, 0xF9, 0x83 }, 16 },
+	// ValidateNonCharacterSpecificEquippable
+	{ { 0x7F4020, 0x7F4440 }, { 0x48, 0x89, 0x5C, 0x24, 0x08, 0x57, 0x48, 0x83, 0xEC, 0x20, 0x8B, 0xDA, 0x48, 0x8B, 0xF9, 0x83 }, 16 },
+	// SetEquippedFromPause
+	{ { 0x843EE0, 0x844300 }, { 0x40, 0x53, 0x55, 0x57, 0x48, 0x83, 0xEC, 0x60, 0x0F, 0x29, 0x74, 0x24, 0x50, 0x48, 0x8B, 0x05 }, 16 },
+};
+
+static GameBuild DetectBuild(void)
+{
+	for (int iBuild = 0; iBuild < BUILD_COUNT; ++iBuild)
+	{
+		bool bMatch = true;
+
+		for (const HookProbe& Probe : s_HookProbes)
+		{
+			if (memcmp((const void*)(modBase + Probe.m_uRva[iBuild]), Probe.m_Prologue, Probe.m_cbPrologue))
+			{
+				bMatch = false;
+				break;
+			}
+		}
+
+		if (bMatch)
+			return (GameBuild)iBuild;
+	}
+
+	return BUILD_UNKNOWN;
+}
+
+// modBase plus the running build's RVA for a v1.02 RVA. Every RVA the code uses is in the
+// table, which is generated from the code.
+uintptr_t GameAddress(uintptr_t uV102Rva)
+{
+	for (const GameRva& Rva : s_GameRvas)
+	{
+		if (Rva.m_uRva[BUILD_V102] == uV102Rva)
+			return modBase + Rva.m_uRva[g_Build];
+	}
+
+	return 0;
+}
 FILE* stream;
 
 __int64 hkSetAccessory(__int64 a1, const char* meshGroup, int accessoryFileID, __int64 pUnk)
@@ -58,7 +186,7 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 
 	const char* resolvedName = "";
 	// Remember we hook this validate function, so this function pointer jumps to our hook
-	if (!NieR::ValidateNonCharacterSpecificEquippable(modBase + 0x133b510, item_id) ||
+	if (!NieR::ValidateNonCharacterSpecificEquippable(GameAddress(0x133b510), item_id) ||
 		currentPlayer > NieR::PlayerId::PID_A2 ||
 		item_id == -1)
 	{
@@ -71,7 +199,7 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 	//2B
 	if (currentPlayer == NieR::PlayerId::PID_2B)
 	{
-		resolvedName = NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id);
+		resolvedName = NieR::ResolveNameFromItemID(GameAddress(0x133b510), item_id);
 		if (strcmp(resolvedName, "item_uq_changeArmour1") &&
 			strcmp(resolvedName, "item_uq_changeArmour2") &&
 			strcmp(resolvedName, "item_uq_dlcCloth1") &&
@@ -85,7 +213,7 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 	//9S
 	else if (currentPlayer == NieR::PlayerId::PID_9S)
 	{
-		resolvedName = NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id);
+		resolvedName = NieR::ResolveNameFromItemID(GameAddress(0x133b510), item_id);
 		if (strcmp(resolvedName, "item_uq_dlcCloth2") &&
 			strcmp(resolvedName, "item_uq_dlcOutfit3") &&
 			strcmp(resolvedName, "item_uq_dlcOutfit4"))
@@ -97,7 +225,7 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 	//A2
 	else if (currentPlayer == NieR::PlayerId::PID_A2)
 	{
-		resolvedName = NieR::ResolveNameFromItemID(modBase + 0x133b510, item_id);
+		resolvedName = NieR::ResolveNameFromItemID(GameAddress(0x133b510), item_id);
 		if (strcmp(resolvedName, "item_uq_dlcCloth3") &&
 			strcmp(resolvedName, "item_uq_dlcOutfit5") &&
 			strcmp(resolvedName, "item_uq_dlcOutfit6"))
@@ -121,8 +249,8 @@ __int64 hkUpdateEquippedActive(__int64 a1, __int64 item_id, int currentPlayer)
 					   (item_id == NieR::ItemId::ITEM_9S_KIMONO) ? NieR::OutfitId::OUTFIT_9S_KIMONO :
 					   (item_id == NieR::ItemId::ITEM_P2_BODY)   ? NieR::OutfitId::OUTFIT_A2_P2_BODY :
 					   (item_id == NieR::ItemId::ITEM_A2_KIMONO) ? NieR::OutfitId::OUTFIT_A2_KIMONO :
-					   NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id);
-		int* activePlayerOutfits = (int*)(modBase + 0x1494354);
+					   NieR::GetOutfitIDFromItemID(GameAddress(0x133b510), item_id);
+		int* activePlayerOutfits = (int*)(GameAddress(0x1494354));
 
 		//std::cout << "Outfit_ID: " << NieR::GetOutfitIDFromItemID(modBase + 0x133b510, item_id) << "\n";
 		//std::cout << "OutFitEquipped: " << ((NieR::PlayerModelInfo*)NieR::GetPlayerFromPlayerNum(currentPlayer))->outfitEquipped << "\n";
@@ -302,7 +430,7 @@ __int64 hkUpdateAccessoryOnUnpause(NieR::PlayerModelInfo* pPlayerModelInfo)
 	{
 	case 0x1:
 		resolvedAccessoryID = 0x4E001;
-		result = NieR::SetMeshToGroup((__int64)modBase + 0x1029558, "Layout", 0x4E006, 0i64);	//last arg is some pointer
+		result = NieR::SetMeshToGroup((__int64)GameAddress(0x1029558), "Layout", 0x4E006, 0i64);	//last arg is some pointer
 		if (result != 0)
 		{
 			//LAMBDA CALL
@@ -367,7 +495,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//2P's Body Replica (White)
 	if (item_id == NieR::ItemId::ITEM_2P_BODY)
 	{
-		int playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(GameAddress(0x125025c));
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
@@ -375,14 +503,14 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_2B_2P_BODY)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_NORMAL, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_2P_BODY, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 	}
@@ -390,7 +518,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//Yorha Uniform 1 (Kimono)
 	if (item_id == NieR::ItemId::ITEM_2B_KIMONO)
 	{
-		int playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(GameAddress(0x125025c));
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
@@ -398,14 +526,14 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_2B_KIMONO)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_NORMAL, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_2B_KIMONO, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 	}
@@ -413,7 +541,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//9P (White 9S)
 	if (item_id == NieR::ItemId::ITEM_9P_BODY)
 	{
-		int playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(GameAddress(0x125025c));
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
@@ -421,14 +549,14 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_9S_9P_BODY)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_NORMAL, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_9P_BODY, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 	}
@@ -436,7 +564,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//9S Kimono
 	if (item_id == NieR::ItemId::ITEM_9S_KIMONO)
 	{
-		int playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(GameAddress(0x125025c));
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
@@ -444,14 +572,14 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_9S_KIMONO)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_NORMAL, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_9S_KIMONO, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 	}
@@ -459,7 +587,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//P2's Body Replica
 	if (item_id == NieR::ItemId::ITEM_P2_BODY)
 	{
-		int playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(GameAddress(0x125025c));
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
@@ -467,14 +595,14 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_A2_P2_BODY)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_NORMAL, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_P2_BODY, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 	}
@@ -482,7 +610,7 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 	//YoRHA Uniform Prototype (NS_A2)
 	if (item_id == NieR::ItemId::ITEM_A2_KIMONO)
 	{
-		int playernum = *(DWORD*)(modBase + 0x125025c);
+		int playernum = *(DWORD*)(GameAddress(0x125025c));
 		__int64 v7 = NieR::GetPlayerFromPlayerNum(NieR::sub_745c50(&playernum));
 		NieR::PlayerModelInfo* v9 = (NieR::PlayerModelInfo*)v7;
 
@@ -490,14 +618,14 @@ __int64 hkSetEquippedFromPause(__int64 a1, int item_id)
 		if (v9->outfitEquipped == NieR::OutfitId::OUTFIT_A2_KIMONO)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_NORMAL, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 
 		if (v7)
 		{
 			NieR::SetOutfitFromPause(v9, NieR::OutfitId::OUTFIT_A2_KIMONO, 1);
-			*(int*)(modBase + 0x13fd4ac) = 1;
+			*(int*)(GameAddress(0x13fd4ac)) = 1;
 			return 1;
 		}
 	}
@@ -1119,7 +1247,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		__int64 count = strlen(buffer);
 
 		//mostly 1:1 to binaryninja
-		__int64 temp_220 = NieR::sub_150d80((void*)(modBase + 0xF8C220), (void*)NieR::sub_28ed30(buffer, count), buffer, count);
+		__int64 temp_220 = NieR::sub_150d80((void*)(GameAddress(0xF8C220)), (void*)NieR::sub_28ed30(buffer, count), buffer, count);
 		__int64 temp_38 = temp_220;
 		int temp_19;
 
@@ -1131,7 +1259,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		{
 			temp_19 = *(unsigned int*)(temp_220 + 32);
 		}
-		char temp_221 = NieR::sub_495970((void*)(modBase + 0xFC2370), temp_19);
+		char temp_221 = NieR::sub_495970((void*)(GameAddress(0xFC2370)), temp_19);
 		NieR::sub_150b70(&temp_38);
 
 
@@ -1209,7 +1337,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 
 	//the return code is weird just using this as default maybe itll end the world idk
 	__int64 result = 0x10000;
-	if (((*(int8_t*)(modBase + 0x10297F0)) & 0x20) == 0 || ((*(int8_t*)(modBase + 0x10297F0)) & 20) != 0 && (pPlayerModelInfo->dword10628 == 0))
+	if (((*(int8_t*)(GameAddress(0x10297F0))) & 0x20) == 0 || ((*(int8_t*)(GameAddress(0x10297F0))) & 20) != 0 && (pPlayerModelInfo->dword10628 == 0))
 	{
 		if (pPlayerModelInfo->unsigned_int17084 != 0)
 		{
@@ -1235,7 +1363,7 @@ __int64 __fastcall HkManageMeshVisibilites(NieR::PlayerModelInfo* pPlayerModelIn
 		}
 	}
 
-	if (((*(int8_t*)(modBase + 0x10297F0)) & 0x20) != 0 && (pPlayerModelInfo->dword10628 != 0))
+	if (((*(int8_t*)(GameAddress(0x10297F0))) & 0x20) != 0 && (pPlayerModelInfo->dword10628 != 0))
 	{
 		NieR::SetDrawBasePlayerMeshes((NieR::CModelWork*)&pPlayerModelInfo->gap0[0x390], 0);
 		__int64* temp_241 = (__int64*)NieR::sub_491170((int*)&pPlayerModelInfo->unsigned_int17084);
@@ -1318,42 +1446,42 @@ void LimitBreak()
 
 void InitializeFunctionPointers()
 {
-	NieR::ManageMeshVisibilities = (NieR::FnManageMeshVisibilities)(modBase + 0x51B940);
-	NieR::SearchMeshGroupIndex = (NieR::FnSearchMeshGroupIndex)(modBase + 0x1910B0);
-	NieR::UpdateAccessoryOnUnpause = (NieR::FnUpdateAccessoryOnUnpause)(modBase + 0x482360);
-	NieR::UpdateEquippedActive = (NieR::FnUpdateEquippedActive)(modBase + 0x7f50f0);
-	NieR::ValidateAccessory = (NieR::FnValidateAccessory)(modBase + 0x7f4830);
-	NieR::ValidateDLCArmor = (NieR::FnValidateDLCArmor)(modBase + 0x7f4770);
-	NieR::ValidatePodSkins = (NieR::FnValidatePodSkins)(modBase + 0x7f6d90);
-	NieR::ValidateNonCharacterSpecificEquippable = (NieR::FnValidateNonCharacterSpecificEquippable)(modBase + 0x7f4020);
-	NieR::AnotherAccessoryThing = (NieR::FnAnotherAccessoryThing)(modBase + 0x4eca60);
-	NieR::SetOutfitFromPause = (NieR::FnSetOutfitFromPause)(modBase + 0x475eb0);
-	NieR::SetEquippedFromPause = (NieR::FnSetEquippedFromPause)(modBase + 0x843ee0);
-	NieR::ResolveNameFromItemID = (NieR::FnResolveNameFromItemID)(modBase + 0x7e35c0);
-	NieR::GetAccessoryIDFromItemID = (NieR::FnGetAccessoryIDFromItemID)(modBase + 0x7d4310);
-	NieR::GetOutfitIDFromItemID = (NieR::FnGetOutfitIDFromItemID)(modBase + 0x7d42a0);
-	NieR::sub_52e9e0 = (NieR::_sub_52e9e0)(modBase + 0x52e9e0);
-	NieR::sub_745c50 = (NieR::_sub_745c50)(modBase + 0x745C50);
-	NieR::sub_45a850 = (NieR::_sub_45a850)(modBase + 0x45A850);
-	NieR::sub_28ed30 = (NieR::_sub_28ed30)(modBase + 0x28ED30);
-	NieR::sub_150d80 = (NieR::_sub_150d80)(modBase + 0x150D80);
-	NieR::sub_495970 = (NieR::_sub_495970)(modBase + 0x495970);
-	NieR::sub_150b70 = (NieR::_sub_150b70)(modBase + 0x150B70);
-	NieR::sub_491170 = (NieR::_sub_491170)(modBase + 0x491170);
-	NieR::sub_491400 = (NieR::_sub_491400)(modBase + 0x491400);
-	NieR::sub_7463c0 = (NieR::_sub_7463c0)(modBase + 0x7463C0);
-	NieR::sub_3e6b70 = (NieR::_sub_3e6b70)(modBase + 0x3e6B70);
-	NieR::sub_45a8c0 = (NieR::_sub_45a8c0)(modBase + 0x45a8c0);
-	NieR::sub_3876a0 = (NieR::_sub_3876a0)(modBase + 0x3876a0);
-	NieR::SetMeshToGroup = (NieR::FnSetMeshToGroup)(modBase + 0x7459b0);
-	NieR::sub_745c10 = (NieR::_sub_745c10)(modBase + 0x745c10);
-	NieR::sub_7e6e60 = (NieR::_sub_7e6e60)(modBase + 0x7e6e60);
-	NieR::GetPlayerFromPlayerNum = (NieR::FnGetPlayerFromPlayerNum)(modBase + 0x3084c0);
-	NieR::sub_7c4b50 = (NieR::_sub_7c4b50)(modBase + 0x7c4b50);
-	NieR::sub_7c4b90 = (NieR::_sub_7c4b90)(modBase + 0x7c4b90);
-	NieR::sub_7c9cb0 = (NieR::_sub_7c9cb0)(modBase + 0x7c9cb0);
-	NieR::SetDrawBasePlayerMeshes = (NieR::FnSetDrawBasePlayerMeshes)(modBase + 0x197C70);
-	NieR::EntityHandleCopy = (NieR::FnEntityHandleCopy)(modBase + 0x744fa0);
+	NieR::ManageMeshVisibilities = (NieR::FnManageMeshVisibilities)(GameAddress(0x51B940));
+	NieR::SearchMeshGroupIndex = (NieR::FnSearchMeshGroupIndex)(GameAddress(0x1910B0));
+	NieR::UpdateAccessoryOnUnpause = (NieR::FnUpdateAccessoryOnUnpause)(GameAddress(0x482360));
+	NieR::UpdateEquippedActive = (NieR::FnUpdateEquippedActive)(GameAddress(0x7f50f0));
+	NieR::ValidateAccessory = (NieR::FnValidateAccessory)(GameAddress(0x7f4830));
+	NieR::ValidateDLCArmor = (NieR::FnValidateDLCArmor)(GameAddress(0x7f4770));
+	NieR::ValidatePodSkins = (NieR::FnValidatePodSkins)(GameAddress(0x7f6d90));
+	NieR::ValidateNonCharacterSpecificEquippable = (NieR::FnValidateNonCharacterSpecificEquippable)(GameAddress(0x7f4020));
+	NieR::AnotherAccessoryThing = (NieR::FnAnotherAccessoryThing)(GameAddress(0x4eca60));
+	NieR::SetOutfitFromPause = (NieR::FnSetOutfitFromPause)(GameAddress(0x475eb0));
+	NieR::SetEquippedFromPause = (NieR::FnSetEquippedFromPause)(GameAddress(0x843ee0));
+	NieR::ResolveNameFromItemID = (NieR::FnResolveNameFromItemID)(GameAddress(0x7e35c0));
+	NieR::GetAccessoryIDFromItemID = (NieR::FnGetAccessoryIDFromItemID)(GameAddress(0x7d4310));
+	NieR::GetOutfitIDFromItemID = (NieR::FnGetOutfitIDFromItemID)(GameAddress(0x7d42a0));
+	NieR::sub_52e9e0 = (NieR::_sub_52e9e0)(GameAddress(0x52e9e0));
+	NieR::sub_745c50 = (NieR::_sub_745c50)(GameAddress(0x745C50));
+	NieR::sub_45a850 = (NieR::_sub_45a850)(GameAddress(0x45A850));
+	NieR::sub_28ed30 = (NieR::_sub_28ed30)(GameAddress(0x28ED30));
+	NieR::sub_150d80 = (NieR::_sub_150d80)(GameAddress(0x150D80));
+	NieR::sub_495970 = (NieR::_sub_495970)(GameAddress(0x495970));
+	NieR::sub_150b70 = (NieR::_sub_150b70)(GameAddress(0x150B70));
+	NieR::sub_491170 = (NieR::_sub_491170)(GameAddress(0x491170));
+	NieR::sub_491400 = (NieR::_sub_491400)(GameAddress(0x491400));
+	NieR::sub_7463c0 = (NieR::_sub_7463c0)(GameAddress(0x7463C0));
+	NieR::sub_3e6b70 = (NieR::_sub_3e6b70)(GameAddress(0x3e6B70));
+	NieR::sub_45a8c0 = (NieR::_sub_45a8c0)(GameAddress(0x45a8c0));
+	NieR::sub_3876a0 = (NieR::_sub_3876a0)(GameAddress(0x3876a0));
+	NieR::SetMeshToGroup = (NieR::FnSetMeshToGroup)(GameAddress(0x7459b0));
+	NieR::sub_745c10 = (NieR::_sub_745c10)(GameAddress(0x745c10));
+	NieR::sub_7e6e60 = (NieR::_sub_7e6e60)(GameAddress(0x7e6e60));
+	NieR::GetPlayerFromPlayerNum = (NieR::FnGetPlayerFromPlayerNum)(GameAddress(0x3084c0));
+	NieR::sub_7c4b50 = (NieR::_sub_7c4b50)(GameAddress(0x7c4b50));
+	NieR::sub_7c4b90 = (NieR::_sub_7c4b90)(GameAddress(0x7c4b90));
+	NieR::sub_7c9cb0 = (NieR::_sub_7c9cb0)(GameAddress(0x7c9cb0));
+	NieR::SetDrawBasePlayerMeshes = (NieR::FnSetDrawBasePlayerMeshes)(GameAddress(0x197C70));
+	NieR::EntityHandleCopy = (NieR::FnEntityHandleCopy)(GameAddress(0x744fa0));
 }
 
 void ConsoleSetup()
@@ -1375,6 +1503,15 @@ int Main(PVOID lpParameter)
 #endif // DEBUG
 
 	modBase = (uintptr_t)GetModuleHandle(NULL);
+	g_Build = DetectBuild();
+
+	// Hooking an unknown build would patch whatever code sits at these addresses
+	if (g_Build == BUILD_UNKNOWN)
+	{
+		std::cout << "NASA: unsupported NieR:Automata build, nothing hooked" << std::endl;
+		return 1;
+	}
+
 	InitializeFunctionPointers();
 	//LimitBreak();
 
